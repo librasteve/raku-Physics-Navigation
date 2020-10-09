@@ -14,9 +14,34 @@ use Physics::Measure;		#<== use Physics::Measure 2nd
 	say "My angle in radians is $angle-in-radians";
 #NB. The unit name 'rad' is reserved for the unit of radioactive Dose
 
-my $sine-of-angle = sin( $angle-in-degrees );
-say "My sine of angle is $sine-of-angle";
+#Trigonometry functions sin/cos/tan automatically convert Angle objects to radians
+	my $sine-of-angle = sin( $angle-in-degrees );			#0.12186934340514748
+	say "My sine of angle is $sine-of-angle";
 
-my $arc-sine = asin( $sine-of-angle );
-say $arc-sine;
+#Inverse Trig functions asin/acos/atan take the :units Pair and return a new Angle object
+	my $arcsine = asin( $sine-of-angle, units => 'degrees' ); #7 °
+	say "My arcsine is $arcsine";
+
+#| Implements degrees-minutes-seconds accessors
+class Bearing is Angle {
+	enum Variation <M T>;
+	has Variation $!variation = T; 
+
+}
+
+#`[[
+    method dms(*%h)  {
+        my $deg = $.value.floor; 
+        my $rem = ( $.value - $deg ) * 60;  
+        if %h<no-secs>:!exists {
+            return( $deg, $min );
+            qq{$deg°$rem′}
+        } else {
+            my $min = $rem.floor;
+            my $sec = ( $rem - $min ) * 60;  
+            qq{$deg°$min′$sec″}
+        }    
+    }    
+#]]
+
 
