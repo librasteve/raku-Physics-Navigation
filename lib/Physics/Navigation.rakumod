@@ -1,8 +1,10 @@
 unit module Physics::Navigation:ver<0.0.3>:auth<Steve Roe (p6steve@furnival.net)>;
 use Physics::Measure;
 
-## May want to promote these features to Physics::Measure / Physics::Unit at some point?
 ## Right now interesting to see what a child module would look like
+###provide Lat and Long units that are Angles (in degrees)
+
+## May want to promote these features to Physics::Measure 
 
 #| Override sin/cos/tan for Unit type Angle
 #| Automatically convert argument to radians
