@@ -4,6 +4,13 @@ use Physics::Measure;
 ## Right now interesting to see what a child module would look like
 ###provide Lat and Long units that are Angles (in degrees)
 
+
+#use dms Angle method for custom formats (icl round-to 
+#override Speed to have default in knots where dist isnmiles
+
+
+
+#`[[[
 ## May want to promote these features to Physics::Measure 
 
 #| Override sin/cos/tan for Unit type Angle
@@ -31,5 +38,4 @@ multi atan( Numeric:D $x, Str :$units! ) is export {
     my $a = Angle.new( value => atan( $x ), units => 'radians' );
     return $a.in( $units );
 }
-
-#compound dms Angle type
+#]]]
