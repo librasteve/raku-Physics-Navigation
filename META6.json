@@ -1,0 +1,23 @@
+{
+    "perl" : "6.d",
+    "name" : "Physics::Navigation",
+    "auth" : "github:p6steve",
+    "api" : "1",
+    "version" : "0.0.1",
+    "description" : "Some units for navigation.",
+    "authors" : [ "p6steve" ],
+    "license" : "Artistic-2.0",
+    "provides" : {
+        "Physics::Navigation" : "lib/Physics/Navigation.rakumod"
+    },
+    "depends" : [
+		"Physics::Measure","Physics::Unit"
+     ],
+    "build-depends" : [ ],
+    "test-depends" : [ ],
+    "resources" : [ ],
+    "tags": [
+      "Physics", "Navigation"
+    ],
+    "source-url" : "git://github.com/p6steve/raku-Physics-Navigation.git"
+}
