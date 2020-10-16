@@ -1,47 +1,34 @@
 #!/usr/bin/env raku 
 use lib '../lib';   #REMOVE ME
 use Physics::Navigation;
-use Physics::Measure;		#<== use Physics::Measure 2nd
 
-#Angles can have units of degrees/minutes/seconds, or radians
-    my $angle-in-degrees ♎️ '7 °';  #7 ° U+00B0
-	say "My angle in degrees is $angle-in-degrees";
-    my $angle-in-minutes ♎️ '7 ′';  #7 ′ U+2032
-	say "My angle in minutes is $angle-in-minutes";
-    my $angle-in-seconds ♎️ '7 ″';  #7 ″ U+2033
-	say "My angle in seconds is $angle-in-seconds";
-    my $angle-in-radians = $angle-in-degrees.in('radians'); #0.122173047639603065 radian
-	say "My angle in radians is $angle-in-radians";
-#NB. The unit name 'rad' is reserved for the unit of radioactive Dose
+#$Physics::Navigation::round-to variable is applied to Str output if defined
+$Physics::Navigation::round-to = 0.01;
+ 
+my $lat1 = Latitude.new( value => 45, compass => <N> );
+say ~$lat1;
+say $lat1.WHAT;
 
-#Trigonometry functions sin/cos/tan automatically convert Angle objects to radians
-	my $sine-of-angle = sin( $angle-in-degrees );			#0.12186934340514748
-	say "My sine of angle is $sine-of-angle";
+my $lat2 ♓️ <43°N>;
+say ~$lat2;
+say $lat2.WHAT;
 
-#Inverse Trig functions asin/acos/atan take the :units Pair and return a new Angle object
-	my $arcsine = asin( $sine-of-angle, units => 'degrees' ); #7 °
-	say "My arcsine is $arcsine";
+my $lat3 = $lat2 ♓️+ $lat1;
+say ~$lat3;
 
-#| Implements degrees-minutes-seconds accessors
-class Bearing is Angle {
-	enum Variation <M T>;
-	has Variation $!variation = T; 
+die "yo";
 
-}
+my $lat4 = $lat2 ♓️- $lat1;
+say ~$lat4;
 
-#`[[
-    method dms(*%h)  {
-        my $deg = $.value.floor; 
-        my $rem = ( $.value - $deg ) * 60;  
-        if %h<no-secs>:!exists {
-            return( $deg, $min );
-            qq{$deg°$rem′}
-        } else {
-            my $min = $rem.floor;
-            my $sec = ( $rem - $min ) * 60;  
-            qq{$deg°$min′$sec″}
-        }    
-    }    
-#]]
+$lat2 ♓️ <55°30′30″S>;
+say ~$lat2;
 
+$lat2 ♓️ $lat1;
+say ~$lat2;
 
+my $long1 ♓️ <45°W>;
+say ~$long1;
+
+my $bear1 ♓️ <45°M>;
+say ~$bear1;
