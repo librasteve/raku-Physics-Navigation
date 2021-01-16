@@ -30,7 +30,7 @@ say ~$lat2, ' ... ', $lat2.WHAT;
 my $long1 ♓️ <45°W>;
 say ~$long1, ' ... ', $long1.WHAT;
 
-$Physics::Navigation::variation = CompassAdj.new( value => 7, compass => <W> );
+$Physics::Navigation::variation = Variation.new( value => 7, compass => <W> );
 say ~$Physics::Navigation::variation;
 
 my $bear1 ♓️ <80°T>;
@@ -42,7 +42,7 @@ say ~$bear2, ' ... ', $bear2.WHAT;
 my $bear3 = $bear2 + $bear1.M;
 say ~$bear3, ' ... ', $bear3.WHAT;
 
-my $steer = CourseAdj.new( value => 45, compass => <P> );
+my $steer = CourseAdj.new( value => 45, compass => <Pt> );
 say ~$steer, ' ... ', $steer.WHAT;
 
 my $bear4 = $bear2 + $steer;

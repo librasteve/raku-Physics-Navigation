@@ -26,12 +26,11 @@ our $round-to = 0.01;		#default rounding of output methods.. Str etc. e.g. 0.01
 class BearingTrue { ...}
 class BearingMag  { ...}
 class CourseAdj { ... }
-class CompassAdj { ... }
+class Variation { ... }
+class Deviation { ... }
 
-our $variation = CompassAdj.new( value => 0, compass => <W> );
-our $deviation = CompassAdj.new( value => 0, compass => <W> );
-
-#iamerejh - P->Pt, S->Sb; W->Vw/Dw; E->Ve/De;
+our $variation = Variation.new( value => 0, compass => <Vw> );
+our $deviation = Deviation.new( value => 0, compass => <Dw> );
 
 class NavAngle is Angle {
 	has $.units where *.name eq '°';
@@ -40,11 +39,14 @@ class NavAngle is Angle {
         my ($value, $compass) = NavAngle.defn-extract( $s );
 		my $type;
 		given $compass {
-			when <N S>.any  { $type = 'Latitude' }
-			when <E W>.any  { $type = 'Longitude' }
-			when <T>.any	{ $type = 'BearingTrue' }
-			when <M>.any	{ $type = 'BearingMag' }
-			default			{ nextsame }
+			when <N S>.any   { $type = 'Latitude' }
+			when <E W>.any   { $type = 'Longitude' }
+			when <T>.any	 { $type = 'BearingTrue' }
+			when <M>.any	 { $type = 'BearingMag' }
+			when <Ve Vw>.any { $type = 'Variation' }
+			when <De Dw>.any { $type = 'Deviation' }
+			when <Pt Sb>.any { $type = 'CourseAdj' }
+			default			 { nextsame }
 		}
         ::($type).new( :$value, :$compass );
     }    
@@ -202,18 +204,32 @@ class BearingMag is Bearing is export {
 	multi method subtract( BearingTrue ) { err-msg }
 }
 
-class CompassAdj is Bearing is export {
+class Variation is Bearing is export {
 	has Real  $.value is rw where -180 <= * <= 180; 
 
 	multi method compass {								#get compass
-		$.value >= 0 ?? <W> !! <E>
+		$.value >= 0 ?? <Vw> !! <Ve>
 	}
 	multi method compass( Str $_ ) {					#set compass
-		$.value = -$.value if $_ eq <E> 
+		$.value = -$.value if $_ eq <Ve> 
 	}
 
     method Str {
-        nextwith( :rev<E>, :fmt<%02d> );
+        nextwith( :rev<Ve>, :fmt<%02d> );
+	}
+}
+class Deviation is Bearing is export {
+	has Real  $.value is rw where -180 <= * <= 180; 
+
+	multi method compass {								#get compass
+		$.value >= 0 ?? <Dw> !! <De>
+	}
+	multi method compass( Str $_ ) {					#set compass
+		$.value = -$.value if $_ eq <De> 
+	}
+
+    method Str {
+        nextwith( :rev<De>, :fmt<%02d> );
 	}
 }
 
@@ -221,14 +237,14 @@ class CourseAdj is Bearing is export {
 	has Real  $.value is rw where -180 <= * <= 180; 
 
 	multi method compass {								#get compass
-		$.value >= 0 ?? <S> !! <P>
+		$.value >= 0 ?? <Sb> !! <Pt>
 	}
 	multi method compass( Str $_ ) {					#set compass
-		$.value = -$.value if $_ eq <P> 
+		$.value = -$.value if $_ eq <Pt> 
 	}
 
     method Str {
-        nextwith( :rev<P>, :fmt<%02d> );
+        nextwith( :rev<Pt>, :fmt<%02d> );
 	}
 }
 
