@@ -51,7 +51,7 @@ class NavAngle is Angle {
 		warn "NavAngles always use degrees!" if $units.defined && ~$units ne '°'; 
 
 		my $nao = self.bless( :$value, units => GetMeaUnit('°') );
-		$nao.compass( $compass );
+		$nao.compass( $compass ) if $compass;
 		return $nao
     }
 
@@ -92,8 +92,6 @@ class NavAngle is Angle {
 	}
 }
 
-class Reach { ... }
-
 class Latitude is NavAngle is export {
 	has Real  $.value is rw where -90 <= * <= 90; 
 
@@ -122,20 +120,14 @@ class Latitude is NavAngle is export {
 	#| override .in to perform identity 1' (Latitude) == 1 nmile
 	method in( Str $s where * eq <nmile nmiles nm>.any ) {
 		my $nv = $.value * 60;
-		Reach.new( "$nv nmile" )
+		Distance.new( "$nv nmile" )
 	}
 }
 
-#iamerejh Log next
-GetMeaUnit('nmile').NewType('Reach');
-class Reach is Length is export {
-	has $.units where *.name eq <nm nmile nmiles>.any;
-
-	#| override .in to perform identity 1' (Latitude) == 1 nmile
-	method in( Str $s where * eq <Latitude> ) {
-		my $nv = $.value / 60;
+sub in-lat( Length $l ) is export {
+	#| ad-hoc sub to perform identity 1' (Latitude) == 1 nmile
+		my $nv = $l.value / 60;
 		Latitude.new( value => $nv, compass => <N> )
-	}
 }
 
 class Longitude is NavAngle is export {
@@ -243,7 +235,7 @@ class Variation is Bearing is export {
 	}
 }
 class Deviation is Bearing is export {
-	has Real  $.value is rw where -180 <= * <= 180; 
+	has Real  $.value is rw where -180 <= * <= 180;
 
 	multi method compass {								#get compass
 		$.value >= 0 ?? <Dw> !! <De>
@@ -272,16 +264,120 @@ class CourseAdj is Bearing is export {
 	}
 }
 
+####### Position, Vector & Velocity #########
+
+#| Position2 = Position1.move( Vector );
+#| Vector = Position1.diff( Position2 );
+#|
+#| using Haversine formula (±0.5%) for great circle distance
+#| viz. https://en.wikipedia.org/wiki/Haversine_formula
+#| viz. http://rosettacode.org/wiki/Haversine_formula#Raku
+#|
+#| initial bearing only as bearing changes along great cirlce routes
+#| viz. https://www.movable-type.co.uk/scripts/latlong.html
+
+#FIXME v2 - Upgrade to geoid math 
+# viz. https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
+
+constant \earth_radius = 6371e3;		# mean earth radius in km
+
+class Position is export {
+	has Real  $.lat;
+	has Real  $.long;
+
+	#| construct from positionals - objects or strings
+	multi method new( Latitude $lat, Longitude $long ) {
+		samewith( lat => +$lat, long => +$long )
+	}
+	multi method new( Str $lat-str, Str $long-str ) {
+        my ($lat-val,  $lat-com)  = NavAngle.defn-extract( $lat-str );
+        my ($long-val, $long-com) = NavAngle.defn-extract( $long-str );
+
+		my $lat-obj  = Latitude.new(  value => $lat-val,  compass => $lat-com );
+		my $long-obj = Longitude.new( value => $long-val, compass => $long-com );
+
+		samewith( $lat-obj, $long-obj ) 
+	} 
+
+	# accessors for objects
+	method Latitude  { Latitude.new(  value => $.lat  ) }
+	method Longitude { Longitude.new( value => $.long ) }
+
+	method Str {
+		qq|($.Latitude, $.Longitude)|
+	}
+
+	# accessors for radians - φ is latitude, λ is longitude 
+	method φ { $.lat  * π / 180 }
+	method λ { $.long * π / 180 }
+
+	method getΔ( $p ) {
+		Position.new(
+			lat  => $p.lat  - $.lat,
+			long => $p.long - $.long,
+		)
+	}
+
+	method haversine-dist(Position $p) {
+		my \Δ = $.getΔ( $p );
+
+		my $a = sin(Δ.φ / 2)² + 
+			    sin(Δ.λ / 2)² * cos($.φ) * cos($p.φ);
+
+		return( 2 * earth_radius * $a.sqrt.asin )
+	}
+
+	method forward-azimuth(Position $p) {
+		my \Δ = $.getΔ( $p );
+
+		my $y = sin(Δ.λ) * cos($p.φ);
+		my $x = cos($.φ) * sin($p.φ) -
+			    sin($.φ) * cos($p.φ) * cos(Δ.λ);
+		my \θ = atan2( $y, $x );				#result in radians
+		return ( θ * 180 / π + 360 ) % 360;		#convert to Bearing  
+	}
+}
+#iamerejh - recut Position Str, add gps Str
+
+class Vector is export   {
+	has Bearing   $.θ;
+	has Distance  $.d;
+
+	method Str {
+		qq|($.θ, $.d)|
+	}
+}
+
+#| Velocity = Vector / Time
+
+class Velocity is export {
+	has Bearing   $.bearing;
+	has Speed     $.speed;
+}
+
+
+##todo - infix '/' and '*' please
+
+
+######### Course and Tide ###########
+
+our $boat-speed-default = Speed.new( value => 10, units => 'knots' );
+our $interval-default   = Time.new(  value => 1,  units => 'hours' );
+
 #| Course embodies the vector identity - CTS = COG + TAV + CAB [+Leeway]
 #| Course To Steer, Course Over Ground, Tide Average Vector?, Course Adj Bearing
+#| there is an implicit duration since TAV is tide Speed (knots) + Bearing
+#| so run the Course for the interval and it will move you from Start to Finish Position
 class Course is export {
-	has Bearing $.COG where *.compass eq <T>;
+    has Speed   $.boat-speed = $boat-speed-default;
+    has Time    $.interval   = $interval-default;
+    has Bearing $.COG where *.compass eq <T>;
 
 
 }
 
 ####### Replace ♎️ with ♓️ #########
-# do NavAngle version of defn-extract
+#why? to do NavAngle specific defn-extract!
 
 sub do-decl( $left is rw, $right ) {
     #declaration with default
@@ -308,3 +404,5 @@ multi infix:<♓️> ( NavAngle:D $left, Str:D $right ) is equiv( &infix:<=> ) i
     $left.assign( $right );
 }
 
+
+#EOF

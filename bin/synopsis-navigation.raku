@@ -3,31 +3,35 @@ use lib '../lib';   #REMOVE ME
 use Physics::Navigation;
 use Physics::Measure;
 
-my $reach1 = Reach.new( value => 12, units => 'nmile' );
-say ~$reach1;
+my Distance $d1   .=new( value => 42,  units => 'nmile' );	say ~$d1;
+my Time     $t1   .=new( value => 1.5, units => 'hr' );		say ~$t1;
+my Latitude $lat1 .=new( value => 45, compass => <N> );		say ~$lat1;
 
-my $latx = $reach1.in('Latitude');
-say ~$latx;
+my $d2 ♓️ '42 nmile';							say ~$d2, ' ... ',  $d2.WHAT;
+my $t2 ♓️ '1.5 hr';								say ~$t2, ' ... ',  $t2.WHAT;
+my $s2 = $d2 / $t2;								say ~$s2.in('knots'), ' ... ',  $s2.WHAT;
 
-my $lat1 = Latitude.new( value => 45, compass => <N> );
-say ~$lat1, ' ... ', $lat1.WHAT;
+my $lat2 ♓️ <43°30′30″S>;						say ~$lat2, ' ... ', $lat2.WHAT;
+my $lat3 = in-lat( $d1 );						say ~$lat3, ' ... ', $lat3.WHAT;
 
-my $lat2 ♓️ <43°30′30″S>;
-say ~$lat2, ' ... ', $lat2.WHAT;
+my $d3 = $lat2.in('nmiles');					say ~$d3, ' ... ', $d3.WHAT;
+my $d4 = $d3 * 2;								say ~$d4;
 
-my $dist = $lat2.in('nmiles');
-dd $dist;
+my $long1 ♓️ <45°W>;							say ~$long1, ' ... ', $long1.WHAT;
+my $long2 ♓️ <22°E>;							say ~$long2, ' ... ', $long2.WHAT;
 
-my $nmiles ♓️ "7 nmiles";
-say ~$nmiles;
-dd $nmiles;
+my Position $p1 .=new( <45°N>, <45°W> );					say ~$p1;
+my Position $p2 .=new( $lat2, $long2 );						say ~$p2;
 
-my $nm2 = $nmiles * 2;
-say ~$nm2;
+say $p1.haversine-dist($p2); 
+say $p1.forward-azimuth($p2); 
 
-my $lat3 = $lat2 + $lat1;
-say ~$lat3, ' ... ', $lat3.WHAT;
 
+
+
+
+
+#`[   #test1
 my $lat4 = $lat2 - $lat1;
 say ~$lat4, ' ... ', $lat4.WHAT;
 
@@ -36,9 +40,6 @@ say ~$lat1, ' ... ', $lat1.WHAT;
 
 $lat2 = $lat4;
 say ~$lat2, ' ... ', $lat2.WHAT;
-
-my $long1 ♓️ <45°W>;
-say ~$long1, ' ... ', $long1.WHAT;
 
 $Physics::Navigation::variation = Variation.new( value => 7, compass => <W> );
 say ~$Physics::Navigation::variation;
@@ -62,4 +63,4 @@ try {
 	my $bear-nope = $bear2 + $bear1;
 }
 if $! { say "Something failed ... $!" }
-
+#]
