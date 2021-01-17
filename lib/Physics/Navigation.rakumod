@@ -3,13 +3,13 @@ use Physics::Measure;
 
 ## Provides extensions to Physics::Measure and Physics::Unit for nautical navigation...
 ##  - NavAngle classes for Latitude, Longitude, Bearing and Course
-##  - NavAngle math (addition, subtraction)
-##  - replace ♎️ with ♓️ (pisces) as declaration shorthand
-##  - application of Variation, Deviation to Bearings
+##  - NavAngle math (add, subtract)
+##  - replace ♎️ with ♓️ (pisces) for NavAngle defn-extract
+##  - apply Variation, Deviation, CourseAdj to Bearing
 #TODOs...
-##  - Course and Leeway
-##  - override Speed (Log) to have default in knots where Distance is nmiles
 ##  - implement nmiles <=> Latitude arcmin identity
+##  - override Speed (Log) to have default in knots where Distance is nmiles
+##  - Course and Leeway
 ##  - Fixes (transits, bearings)
 ##  - Position class (Fixes) DR and EP
 ##  - Tracks (vectors) with addition - COG, CTS, COW, Tide, Leeway, Fix vectors
@@ -23,9 +23,6 @@ my $db = 0;                 #debug
 our $round-to = 0.01;		#default rounding of output methods.. Str etc. e.g. 0.01
 #NB. Bearings round to 1 degree
 
-class BearingTrue { ...}
-class BearingMag  { ...}
-class CourseAdj { ... }
 class Variation { ... }
 class Deviation { ... }
 
@@ -87,13 +84,15 @@ class NavAngle is Angle {
 		my $deg where 0 <= * < 360 = $0 % 360;
 		my $min where 0 <= * <  60 = $1 // 0;
 		my $sec where 0 <= * <  60 = $2 // 0;
-		my $nominal = ( ($deg * 3600) + ($min * 60) + $sec ) / 3600;
+		my $value = ( ($deg * 3600) + ($min * 60) + $sec ) / 3600;
 		my $compass = ~$3;
 
 		say "NA extracting «$s»: value is $deg°$min′$sec″, compass is $compass" if $db;
-		return($nominal, $compass)
+		return( $value, $compass )
 	}
 }
+
+class Reach { ... }
 
 class Latitude is NavAngle is export {
 	has Real  $.value is rw where -90 <= * <= 90; 
@@ -116,9 +115,27 @@ class Latitude is NavAngle is export {
     }    
     multi method subtract( Latitude $l ) {
         self.value -= $l.value;
-		self.value = -90 if self.value < -90;			#clamp to 90°
+		self.value = -90 if self.value < -90;			#clamp to -90°
         return self 
-    }    
+    }
+
+	#| override .in to perform identity 1' (Latitude) == 1 nmile
+	method in( Str $s where * eq <nmile nmiles nm>.any ) {
+		my $nv = $.value * 60;
+		Reach.new( "$nv nmile" )
+	}
+}
+
+#iamerejh Log next
+GetMeaUnit('nmile').NewType('Reach');
+class Reach is Length is export {
+	has $.units where *.name eq <nm nmile nmiles>.any;
+
+	#| override .in to perform identity 1' (Latitude) == 1 nmile
+	method in( Str $s where * eq <Latitude> ) {
+		my $nv = $.value / 60;
+		Latitude.new( value => $nv, compass => <N> )
+	}
 }
 
 class Longitude is NavAngle is export {
@@ -150,8 +167,6 @@ class Longitude is NavAngle is export {
 #| Bearing embodies the identity 'M = T + Vw', so...
 #| Magnetic = True + Variation-West [+ Deviation-West]
 
-sub err-msg { die "Cannot combine Bearings of different Types!" }
-
 class Bearing is NavAngle {
 	has Real  $.value is rw where 0 <= * <= 360; 
 
@@ -172,34 +187,43 @@ class Bearing is NavAngle {
     }
 }
 
+class BearingTrue { ...}
+class BearingMag  { ...}
+
+sub err-msg { die "Can't mix BearingTrue and BearingMag for add/subtract!" }
+
 class BearingTrue is Bearing is export {
+
 	multi method compass { <T> }						#get compass
+
 	multi method compass( Str $_ ) {					#set compass
 		die "BearingTrue compass must be <T>" unless $_ eq <T>
 	}
 
-	method M {
+	method M {											#coerce to BearingMag
 		my $nv = $.value + ( +$variation + +$deviation );
 		BearingMag.new( value => $nv, compass => <M> )
 	}
 
-	#| can't combine with Mag 
+	#| can't mix with BearingMag 
 	multi method add( BearingMag ) { err-msg }
 	multi method subtract( BearingMag ) { err-msg }
 }
 
 class BearingMag is Bearing is export {
+
 	multi method compass { <M> }						#get compass
+
 	multi method compass( Str $_ ) {					#set compass
 		die "BearingMag compass must be <M>" unless $_ eq <M>
 	}
 
-	method T {
+	method T {											#coerce to BearingTrue
 		my $nv = $.value - ( +$variation + +$deviation );
 		BearingTrue.new( value => $nv, compass => <T> )
 	}
 
-	#| can't combine with True 
+	#| can't mix with Bearing True 
 	multi method add( BearingTrue ) { err-msg }
 	multi method subtract( BearingTrue ) { err-msg }
 }
@@ -251,12 +275,13 @@ class CourseAdj is Bearing is export {
 #| Course embodies the vector identity - CTS = COG + TAV + CAB [+Leeway]
 #| Course To Steer, Course Over Ground, Tide Average Vector?, Course Adj Bearing
 class Course is export {
-	has Bearing $!b-true where *.compass eq <T>;
+	has Bearing $.COG where *.compass eq <T>;
 
 
 }
 
 ####### Replace ♎️ with ♓️ #########
+# do NavAngle version of defn-extract
 
 sub do-decl( $left is rw, $right ) {
     #declaration with default

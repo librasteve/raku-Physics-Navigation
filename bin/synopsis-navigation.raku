@@ -3,14 +3,24 @@ use lib '../lib';   #REMOVE ME
 use Physics::Navigation;
 use Physics::Measure;
 
+my $reach1 = Reach.new( value => 12, units => 'nmile' );
+say ~$reach1;
+
+my $latx = $reach1.in('Latitude');
+say ~$latx;
+
 my $lat1 = Latitude.new( value => 45, compass => <N> );
 say ~$lat1, ' ... ', $lat1.WHAT;
 
 my $lat2 ♓️ <43°30′30″S>;
 say ~$lat2, ' ... ', $lat2.WHAT;
 
+my $dist = $lat2.in('nmiles');
+dd $dist;
+
 my $nmiles ♓️ "7 nmiles";
 say ~$nmiles;
+dd $nmiles;
 
 my $nm2 = $nmiles * 2;
 say ~$nm2;
