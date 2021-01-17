@@ -3,6 +3,8 @@ use lib '../lib';   #REMOVE ME
 use Physics::Navigation;
 use Physics::Measure;
 
+$Physics::Measure::round-to = 1;
+
 my Distance $d1   .=new( value => 42,  units => 'nmile' );	say ~$d1;
 my Time     $t1   .=new( value => 1.5, units => 'hr' );		say ~$t1;
 my Latitude $lat1 .=new( value => 45, compass => <N> );		say ~$lat1;
@@ -20,12 +22,12 @@ my $d4 = $d3 * 2;								say ~$d4;
 my $long1 ♓️ <45°W>;							say ~$long1, ' ... ', $long1.WHAT;
 my $long2 ♓️ <22°E>;							say ~$long2, ' ... ', $long2.WHAT;
 
-my Position $p1 .=new( <45°N>, <45°W> );					say ~$p1;
-my Position $p2 .=new( $lat2, $long2 );						say ~$p2;
+my Position $p1 .=new( $lat1, $long1 );			say ~$p1;
+my Position $p2 .=new( $lat2, $long2 );			say ~$p2;
 
-say $p1.haversine-dist($p2); 
-say $p1.forward-azimuth($p2); 
-
+say ~$p1.haversine-dist($p2).in('km'); 
+say ~$p1.forward-azimuth($p2); 
+say ~$p1.diff($p2);
 
 
 

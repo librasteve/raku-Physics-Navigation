@@ -6,17 +6,15 @@ use Physics::Measure;
 ##  - NavAngle math (add, subtract)
 ##  - replace ♎️ with ♓️ (pisces) for NavAngle defn-extract
 ##  - apply Variation, Deviation, CourseAdj to Bearing
-#TODOs...
 ##  - implement nmiles <=> Latitude arcmin identity
-##  - override Speed (Log) to have default in knots where Distance is nmiles
-##  - Course and Leeway
+##  - Position class
+#TODOs...
+##  - DR and EP
 ##  - Fixes (transits, bearings)
-##  - Position class (Fixes) DR and EP
 ##  - Tracks (vectors) with addition - COG, CTS, COW, Tide, Leeway, Fix vectors
 ##  - Tide ladders
 ##  - Buoys (grammar)
 ##  - Lights (grammar) 
-##  - gps
 
 my $db = 0;                 #debug
 
@@ -279,43 +277,25 @@ class CourseAdj is Bearing is export {
 #FIXME v2 - Upgrade to geoid math 
 # viz. https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
 
-constant \earth_radius = 6371e3;		# mean earth radius in km
+constant \earth_radius = 6371e3;		# mean earth radius in m
+
+class Vector { ... }
 
 class Position is export {
-	has Real  $.lat;
-	has Real  $.long;
+	has Latitude  $.lat;
+	has Longitude $.long;
 
-	#| construct from positionals - objects or strings
-	multi method new( Latitude $lat, Longitude $long ) {
-		samewith( lat => +$lat, long => +$long )
-	}
-	multi method new( Str $lat-str, Str $long-str ) {
-        my ($lat-val,  $lat-com)  = NavAngle.defn-extract( $lat-str );
-        my ($long-val, $long-com) = NavAngle.defn-extract( $long-str );
+	#| new from positionals
+	multi method new( $lat, $long ) { samewith( :$lat, :$long ) }
 
-		my $lat-obj  = Latitude.new(  value => $lat-val,  compass => $lat-com );
-		my $long-obj = Longitude.new( value => $long-val, compass => $long-com );
-
-		samewith( $lat-obj, $long-obj ) 
-	} 
-
-	# accessors for objects
-	method Latitude  { Latitude.new(  value => $.lat  ) }
-	method Longitude { Longitude.new( value => $.long ) }
-
-	method Str {
-		qq|($.Latitude, $.Longitude)|
-	}
+	method Str { qq|($.lat, $.long)| }
 
 	# accessors for radians - φ is latitude, λ is longitude 
-	method φ { $.lat  * π / 180 }
-	method λ { $.long * π / 180 }
+	method φ { +$.lat  * π / 180 }
+	method λ { +$.long * π / 180 }
 
 	method getΔ( $p ) {
-		Position.new(
-			lat  => $p.lat  - $.lat,
-			long => $p.long - $.long,
-		)
+		Position.new( ($p.lat - $.lat), ($p.long - $.long) )
 	}
 
 	method haversine-dist(Position $p) {
@@ -324,7 +304,8 @@ class Position is export {
 		my $a = sin(Δ.φ / 2)² + 
 			    sin(Δ.λ / 2)² * cos($.φ) * cos($p.φ);
 
-		return( 2 * earth_radius * $a.sqrt.asin )
+		my $c = ( 2 * earth_radius * $a.sqrt.asin );  
+		Distance.new( value => $c, units => 'm' )
 	}
 
 	method forward-azimuth(Position $p) {
@@ -333,18 +314,23 @@ class Position is export {
 		my $y = sin(Δ.λ) * cos($p.φ);
 		my $x = cos($.φ) * sin($p.φ) -
 			    sin($.φ) * cos($p.φ) * cos(Δ.λ);
-		my \θ = atan2( $y, $x );				#result in radians
-		return ( θ * 180 / π + 360 ) % 360;		#convert to Bearing  
+		my \θ = atan2( $y, $x );					#radians
+		my $deg = ( θ * 180 / π + 360 ) % 360;		#degrees 
+		BearingTrue.new( value => $deg )
 	}
+
+	method diff(Position $p) {
+		Vector.new( θ => $.forward-azimuth($p), d => $.haversine-dist($p) )
+	}
+#iamerejh - move
 }
-#iamerejh - recut Position Str, add gps Str
 
 class Vector is export   {
-	has Bearing   $.θ;
-	has Distance  $.d;
+	has BearingTrue $.θ;
+	has Distance    $.d;
 
 	method Str {
-		qq|($.θ, $.d)|
+		qq|($.θ, {$.d.in('nmile')})|
 	}
 }
 
