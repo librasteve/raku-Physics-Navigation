@@ -28,11 +28,8 @@ my Position $dest  .=new( $lat2, $long2 );		say ~$dest,  ' ... ', $dest.WHAT;
 #say ~$start.haversine-dist($dest).in('km'); 
 #say ~$start.forward-azimuth($dest); 
 
-my $diff = $start.diff($dest);						say ~$diff,  ' ... ', $diff.WHAT;
-my $dest2 = $start.move($diff);						say ~$dest2,  ' ... ', $dest2.WHAT;
-
-
-
+my $vect = $start.diff($dest);					say ~$vect,  ' ... ', $vect.WHAT;
+my $dest2 = $start.move($vect);					say ~$dest2, ' ... ', $dest2.WHAT;
 
 
 #[   #test1

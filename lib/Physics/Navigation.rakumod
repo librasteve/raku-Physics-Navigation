@@ -163,13 +163,35 @@ class NavAngle is Angle {
 	class Bearing is NavAngle {
 		has Real  $.value is rw where 0 <= * <= 360; 
 
-		method Str( :$fmt )  {
+		method points( :$dec ) {
+			return '' unless $dec;
+			my %num = %( cardinal => 4, ordinal => 8, half-winds => 16 );
+			my %pnt = %( cardinal => <N E S W>, 
+						 ordinal  => <N NE E SE S SW W NW>,
+						 half-winds => <N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW>,
+			);
+
+			sub pick-pnt( :$dec ) {
+				my $iter = %num{$dec};
+				my $step = 360/$iter;
+				my $rvc = ( $.value + $step/2 ) % 360;			#rotate value clockwise by half-step
+				for 0..^$iter -> $i {
+					my $port = $step *  $i;
+					my $star = $step * ($i+1);
+					if $port < $rvc <= $star {
+						return %pnt{$dec}[$i]; 
+					}
+				}
+			}
+			pick-pnt( :$dec );
+		} 
+
+		method Str( :$fmt, :$dec='half-winds' )  {
 			nextsame if $fmt;								#pass through to NA.Str
-			my $deg = $.value.round(1);						#always rounds to whole degs
-			$deg = sprintf( "%03d", $deg );
-			qq|$deg° ($.compass)|
+			my $d = sprintf( "%03d", $.value.round(1) );	#always rounds to whole degs 
+			my $p = $.points( :$dec );						#specify points decoration style
+			qq|$d°$p ($.compass)|
 		}
-#iamerejh - add ESE
 
 		multi method add( Bearing $r ) {
 			self.value += $r.value % 360;
@@ -197,8 +219,7 @@ class NavAngle is Angle {
 		multi method compass { <T> }						#get compass
 
 		multi method compass( Str $_ ) {					#set compass
-			die "BearingTrue compass must be <T>" unless $_ eq <T>
-		}
+			die "BearingTrue compass must be <T>" unless $_ eq <T> }
 
 		method M {											#coerce to BearingMag
 			my $nv = $.value + ( +$variation + +$deviation );
