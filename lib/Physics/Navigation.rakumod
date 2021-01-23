@@ -163,27 +163,27 @@ class NavAngle is Angle {
 	class Bearing is NavAngle {
 		has Real  $.value is rw where 0 <= * <= 360; 
 
+		#| viz. https://en.wikipedia.org/wiki/Points_of_the_compass
 		method points( :$dec ) {
 			return '' unless $dec;
-			my %num = %( cardinal => 4, ordinal => 8, half-winds => 16 );
-			my %pnt = %( cardinal => <N E S W>, 
-						 ordinal  => <N NE E SE S SW W NW>,
-						 half-winds => <N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW>,
-			);
 
-			sub pick-pnt( :$dec ) {
-				my $iter = %num{$dec};
-				my $step = 360/$iter;
+			my %points = %( cardinal => <N E S W>, 
+						 ordinal  => <N NE E SE S SW W NW>,
+						 half-winds => <N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW>,	);
+
+			sub pick-point( :$dec ) {
+				my $iter = %points{$dec}.elems;
+				my $step = 360 / $iter;
 				my $rvc = ( $.value + $step/2 ) % 360;			#rotate value clockwise by half-step
 				for 0..^$iter -> $i {
 					my $port = $step *  $i;
 					my $star = $step * ($i+1);
 					if $port < $rvc <= $star {
-						return %pnt{$dec}[$i]; 
+						return %points{$dec}[$i]; 
 					}
 				}
 			}
-			pick-pnt( :$dec );
+			pick-point( :$dec );
 		} 
 
 		method Str( :$fmt, :$dec='half-winds' )  {
