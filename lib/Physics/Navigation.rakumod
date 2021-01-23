@@ -2,7 +2,6 @@ unit module Physics::Navigation:ver<0.0.3>:auth<Steve Roe (p6steve@furnival.net)
 use Physics::Measure;
 
 ## Provides extensions to Physics::Measure and Physics::Unit for nautical navigation...
-##  - NavAngle classes for Latitude, Longitude, Bearing and Course
 ##  - NavAngle math (add, subtract)
 ##  - replace ♎️ with ♓️ (pisces) for NavAngle defn-extract
 ##  - apply Variation, Deviation, CourseAdj to Bearing
@@ -167,23 +166,19 @@ class NavAngle is Angle {
 		method points( :$dec ) {
 			return '' unless $dec;
 
-			my %points = %( cardinal => <N E S W>, 
-						 ordinal  => <N NE E SE S SW W NW>,
-						 half-winds => <N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW>,	);
+			my @all-points = <N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW>;
+			my %pnt-count = %( cardinal => 4, ordinal  => 8, half-winds => 16 );
 
-			sub pick-point( :$dec ) {
-				my $iter = %points{$dec}.elems;
-				my $step = 360 / $iter;
-				my $rvc = ( $.value + $step/2 ) % 360;			#rotate value clockwise by half-step
-				for 0..^$iter -> $i {
-					my $port = $step *  $i;
-					my $star = $step * ($i+1);
-					if $port < $rvc <= $star {
-						return %points{$dec}[$i]; 
-					}
+			my $iter = %pnt-count{$dec};
+			my $step = 360 / $iter;
+			my $rvc = ( $.value + $step/2 ) % 360;		#rotate value clockwise by half-step
+			for 0..^$iter -> $i {
+				my $port = $step * $i;
+				my $star = $step * ($i+1);
+				if $port < $rvc <= $star {				#using slice to sample @all-points
+					return @all-points[0,(16/$iter)...*][$i]
 				}
 			}
-			pick-point( :$dec );
 		} 
 
 		method Str( :$fmt, :$dec='half-winds' )  {
@@ -385,7 +380,6 @@ class Velocity is export {
 	has Bearing   $.bearing;
 	has Speed     $.speed;
 }
-
 
 ##todo - infix '/' and '*' please
 
