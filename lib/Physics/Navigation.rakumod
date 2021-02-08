@@ -221,7 +221,7 @@ class NavAngle is Angle {
 			BearingMag.new( value => $nv, compass => <M> )
 		}
 
-		#| can't mix with BearingMag 
+		#| can't mix unless BearingMag 
 		multi method add( BearingMag ) { err-msg }
 		multi method subtract( BearingMag ) { err-msg }
 	}
@@ -239,7 +239,7 @@ class NavAngle is Angle {
 			BearingTrue.new( value => $nv, compass => <T> )
 		}
 
-		#| can't mix with Bearing True 
+		#| can't mix unless Bearing True 
 		multi method add( BearingTrue ) { err-msg }
 		multi method subtract( BearingTrue ) { err-msg }
 	}
