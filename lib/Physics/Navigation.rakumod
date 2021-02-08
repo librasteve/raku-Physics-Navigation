@@ -7,11 +7,11 @@ use Physics::Measure;
 ##  - apply Variation, Deviation, CourseAdj to Bearing
 ##  - implement nmiles <=> Latitude arcmin identity
 ##  - Position class
-#TODOs...
 ##  - ESE
-##  - DR and EP
-##  - Fixes (transits, bearings)
+#TODOs...
 ##  - Tracks (vectors) with addition - COG, CTS, COW, Tide, Leeway, Fix vectors
+##  - Fixes (transits, bearings)
+##  - DR and EP (an EP is a Position that's a result of 2+ Fixes)
 ##  - Passages - Milestones and Legs
 ##  - Tide ladders
 ##  - Buoys (grammar)
@@ -167,7 +167,7 @@ class NavAngle is Angle {
 			return '' unless $dec;
 
 			my @all-points = <N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW>;
-			my %pnt-count = %( cardinal => 4, ordinal  => 8, half-winds => 16 );
+			my %pnt-count = %( cardinal => 4, ordinal => 8, half-winds => 16 );
 
 			my $iter = %pnt-count{$dec};
 			my $step = 360 / $iter;
@@ -175,7 +175,7 @@ class NavAngle is Angle {
 			for 0..^$iter -> $i {
 				my $port = $step * $i;
 				my $star = $step * ($i+1);
-				if $port < $rvc <= $star {				#using slice to sample @all-points
+				if $port < $rvc <= $star {				#using slice sequence to sample @all-points
 					return @all-points[0,(16/$iter)...*][$i]
 				}
 			}
@@ -317,28 +317,32 @@ class NavAngle is Angle {
 		method φ { +$.lat  * π / 180 }
 		method λ { +$.long * π / 180 }
 
-		method getΔ( $p ) {
+		method Δ( $p ) {
 			Position.new( ($p.lat - $.lat), ($p.long - $.long) )
 		}
 
 		method haversine-dist(Position $p) {
-			my \Δ = $.getΔ( $p );
+			my \Δ = $.Δ( $p );
 
 			my $a = sin(Δ.φ / 2)² + 
 					sin(Δ.λ / 2)² * cos($.φ) * cos($p.φ);
 
-			my $c = ( 2 * earth_radius * $a.sqrt.asin );  
-			Distance.new( value => $c, units => 'm' )
+			Distance.new( 
+				value => 2 * earth_radius * $a.sqrt.asin,
+				units => 'm',
+			 )
 		}
 		method forward-azimuth(Position $p) {
-			my \Δ = $.getΔ( $p );
+			my \Δ = $.Δ( $p );
 
 			my $y = sin(Δ.λ) * cos($p.φ);
 			my $x = cos($.φ) * sin($p.φ) -
 					sin($.φ) * cos($p.φ) * cos(Δ.λ);
 			my \θ = atan2( $y, $x );						#radians
-			my $deg = ( ( θ * 180 / π ) + 360 ) % 360;		#degrees 0-360 
-			BearingTrue.new( value => $deg )
+
+			BearingTrue.new(
+				value => ( ( θ * 180 / π ) + 360 ) % 360	#degrees 0-360
+			) 
 		}
 
 		#| Vector = Position1.diff( Position2 );

@@ -25,12 +25,13 @@ my $long2 ♓️ <22°E>;							say ~$long2, ' ... ', $long2.WHAT;
 my Position $start .=new( $lat1, $long1 );		say ~$start, ' ... ', $start.WHAT;
 my Position $dest  .=new( $lat2, $long2 );		say ~$dest,  ' ... ', $dest.WHAT;
 
-#say ~$start.haversine-dist($dest).in('km'); 
-#say ~$start.forward-azimuth($dest); 
+say ~$start.haversine-dist($dest).in('km'); 
+say ~$start.forward-azimuth($dest); 
 
 my $vect = $start.diff($dest);					say ~$vect,  ' ... ', $vect.WHAT;
 my $dest2 = $start.move($vect);					say ~$dest2, ' ... ', $dest2.WHAT;
 
+die;
 
 #[   #test1
 my $lat4 = $lat2 - $lat1;
