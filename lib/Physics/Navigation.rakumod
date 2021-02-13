@@ -370,27 +370,38 @@ class Position is export {
 	}
 }
 
+#| Velocity = Vector / Time
+class Velocity { ... }
+
 class Vector is export   {
 	has BearingTrue $.θ;
-	has Distance    $.d;
+	has Length      $.d;  #Distance isa Length
 
 	method Str {
 		qq|($.θ, {$.d.in('nmile')})|
 	}
-	method divide {
-		say 'yo'; #iamerejh
+	method divide( Time $t ) {
+		Velocity.new(
+			θ => $.θ,
+			s => $.d / $t,
+		) 
 	}
 }
 
-#| Velocity = Vector / Time
-
 class Velocity is export {
-	has Bearing   $.bearing;
-	has Speed     $.speed;
+	has BearingTrue $.θ;
+	has Speed       $.s;
+
+	method Str {
+		qq|($.θ, {$.s.in('knots')})|
+	}
+	method multiply( Time $t ) {
+		Vector.new(
+			θ => $.θ,
+			d => $.s * $t,
+		) 
+	}
 }
-
-##todo - infix '/' and '*' please
-
 
 ######### Course and Tide ###########
 
@@ -409,8 +420,8 @@ class Course is export {
 
 }
 
-####### Replace ♎️ with ♓️ #########
-#why? to do NavAngle specific defn-extract!
+######## Replace ♎️ with ♓️ #########
+#to do NavAngle specific defn-extract!
 
 sub do-decl( $left is rw, $right ) {
     #declaration with default
