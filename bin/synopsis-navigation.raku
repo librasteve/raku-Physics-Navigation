@@ -31,9 +31,11 @@ say ~$start.forward-azimuth($dest);
 my $vect = $start.diff($dest);					say ~$vect,  ' ... ', $vect.WHAT;
 my $dest2 = $start.move($vect);					say ~$dest2, ' ... ', $dest2.WHAT;
 
-die;
+my $dur ♓️ '1 hr';								say ~$dur,   ' ... ', $dur.WHAT;
+#my $dur = Time.new(value => 1, units => 'hr' ); say ~$dur;
+my $vel  = $vect / $dur;						say ~$vel;
 
-#[   #test1
+#`[   #test1
 my $lat4 = $lat2 - $lat1;
 say ~$lat4, ' ... ', $lat4.WHAT;
 
