@@ -11,13 +11,19 @@ use Physics::Measure;
 ##  - Course class - COG, CTS, COW, Tide, Leeway
 ##  - my Position $p3 .=new( $lat2, ♓️<22°E> ); [Position as 2 Str]
 ##  - Fixes
-#TODOs...
+##  - EP with 2+ Fixes
+
+## version 2 backlog
+##  - Buoys (grammar)
+##  - Lights (grammar)
 ##  - Transits
-##  - EP (an EP is a Position that's a result of 2+ Fixes - 'cocked hat')
+##  - Estimates with 3 Fixes (cocked hat)
+##  - Uncertainty
 ##  - Passages - Milestones and Legs
 ##  - Tide ladders
-##  - Buoys (grammar)
-##  - Lights (grammar) 
+##  - Beaufort scale
+##  - Sea state scale
+##  - Visibility scale
 
 
 my $db = 0;                 #debug
@@ -384,18 +390,41 @@ class Fix is export {
 }
 
 class Estimate is Position is export {
-	has Fix @!fixes where *.elems >= 2;
+	has Fix $.fix-A;
+	has Fix $.fix-B;
 
-	method position( --> Position ) {
-		Position.new( ♓️<51.5072°N>, ♓️<0.1276°W> )
-	}
+	method position {
+		# create and solve as Angle-Side-Angle (ASA), C is the unknown
+		# viz. https://www.mathsisfun.com/algebra/trig-solving-asa-triangles.html
 
-	method uncertainty( --> Length ) {
-		♓️<124m>
+		# 1. get Length & Bearing of c with .diff
+		my $diff = $.fix-A.location.diff($.fix-B.location);
+
+		my \c     = $diff.d;
+		my \AtoB  = $diff.θ; 				say AtoB if $db;
+
+		# 2. work out triangle angles from Bearings
+		my \CtoA = $.fix-A.direction;
+		my \CtoB = $.fix-B.direction;
+
+		my \BtoA = AtoB.back;
+		my \BtoC = CtoB.back;
+		my \AtoC = CtoA.back;
+
+		my \A = AtoB - AtoC; 				say A if $db;
+		my \B = BtoC - BtoA;				say B if $db;
+		my \C = CtoA - CtoB; 				say C if $db;
+		die("Estimate Fix angles do not add to 180°") unless (A+B+C) == 180;
+
+		# 3. use sine law to get Length of a
+		my \a = c / sin(C) * sin(A);		say a if $db;
+
+		# 4. get Position of C with A.move
+		$.fix-B.location.move: Vector.new( θ => BtoC, d => a )
 	}
 
 	method Str {
-		"Estimated Position {~$.position} with Uncertainty {~$.uncertainty}"
+		"Estimated Position: {~$.position}"
 	}
 }
 

@@ -14,7 +14,7 @@
   "build-depends": [],
   "test-depends": [],
   "provides": {
-    "Physics::Navigation": "lib/Physics/Navigation.rakumod"
+    "Physics::Navigation": "lib/Physics/Navigation.pm6"
   },
   "resources": [],
   "license": "Artistic-2.0",
