@@ -5,23 +5,24 @@ use Physics::Measure;
 ##  - NavAngle math (add, subtract)
 ##  - replace ♎️ with ♓️ (pisces) for NavAngle defn-extract
 ##  - apply Variation, Deviation, CourseAdj to Bearing
-##  - implement nmiles <=> Latitude arcmin identity
+##  - nmiles <=> Latitude arcmin identity
 ##  - Position class
 ##  - ESE
+##  - Course class - COG, CTS, COW, Tide, Leeway
+##  - my Position $p3 .=new( $lat2, ♓️<22°E> ); [Position as 2 Str]
 #TODOs...
-##  - Tracks (vectors) with addition - COG, CTS, COW, Tide, Leeway, Fix vectors
-##  - Fixes (transits, bearings)
-##  - DR and EP (an EP is a Position that's a result of 2+ Fixes)
+##  - Transits
+##  - Fixes
+##  - DR and EP (an EP is a Position that's a result of 2+ Fixes - 'cocked hat')
 ##  - Passages - Milestones and Legs
 ##  - Tide ladders
 ##  - Buoys (grammar)
 ##  - Lights (grammar) 
-##  - my Position $p3 .=new( $lat2, ♓️<22°E> ); or somehow Position as 2 Str 
+
 
 my $db = 0;                 #debug
 
-our $round-to = 0.01;		#default rounding of output methods.. Str etc. e.g. 0.01
-#NB. Bearings round to 1 degree
+our $round-val := $Physics::Measure::round-val;     #NB. Bearings always round to 1 degree
 
 class Variation { ... }
 class Deviation { ... }
@@ -32,7 +33,7 @@ our $deviation = Deviation.new( value => 0, compass => <Dw> );
 class NavAngle is Angle {
 	has $.units where *.name eq '°';
 
-	multi method new( Str:D $s ) {						say "NA new from Str" if $db; 
+	multi method new( Str:D $s ) {						say "NA new from Str ", $s if $db;
         my ($value, $compass) = NavAngle.defn-extract( $s );
 		my $type;
 		given $compass {
@@ -46,7 +47,7 @@ class NavAngle is Angle {
 			default			 { nextsame }
 		}
         ::($type).new( :$value, :$compass );
-    }    
+    }
     multi method new( :$value!, :$units, :$compass ) {	say "NA new from attrs" if $db; 
 		warn "NavAngles always use degrees!" if $units.defined && ~$units ne '°'; 
 
@@ -54,13 +55,9 @@ class NavAngle is Angle {
 		$nao.compass( $compass ) if $compass;
 		return $nao
     }
-
-    multi method assign( Str:D $r ) {					say "NA assign from Str" if $db; 
-        ($.value, $.compass) = NavAngle.defn-extract( $r );   
-    }   
-	multi method assign( NavAngle:D $r ) {				say "NA assign from NavAngle" if $db;
-        $.value = $r.value;
-    }
+	method clone( ::T: ) {							    say "NA cloning " ~ T.^name if $db;
+		::T.new: :$.value
+	}
 
     method raku {
         q|\qq[{self.^name}].new( value => \qq[{$.value}], compass => \qq[{$.compass}] )|;
@@ -70,7 +67,7 @@ class NavAngle is Angle {
         my $neg = $.compass eq $rev ?? 1 !! 0;			#negate value if reverse pole
         my ( $deg, $min ) = self.dms( :no-secs, :negate($neg) );    
         $deg = sprintf( $fmt, $deg );
-        $min = $round-to ?? $min.round($round-to) !! $min;
+        $min = $round-val ?? $min.round($round-val) !! $min;
         qq|$deg°$min′$.compass|
     }
 
@@ -80,7 +77,7 @@ class NavAngle is Angle {
         #handle degrees-minutes-seconds <°> is U+00B0 <′> is U+2032 <″> is U+2033
 		#NB different to Measure.rakumod, here arcmin ′? is optional as want eg. <45°N> to parse 
 
-        unless $s ~~ /(\d*)\°(\d*)\′?(\d*)\″?\w*(<[NSEWMT]>)/ { return 0 };
+        unless $s ~~ /(<[\d.]>*)\°(<[\d.]>*)\′?(<[\d.]>*)\″?\w*(<[NSEWMT]>)/ { return 0 };
 
 		my $deg where 0 <= * < 360 = $0 % 360;
 		my $min where 0 <= * <  60 = $1 // 0;
@@ -92,6 +89,10 @@ class NavAngle is Angle {
 		return( $value, $compass )
 	}
 }
+
+######## Replace ♎️ with ♓️ #########
+#to do NavAngle specific defn-extract!
+multi prefix:<♓️>    ( Str:D $new )      is export { NavAngle.new: $new }
 
 class Latitude is NavAngle is export {
 	has Real  $.value is rw where -90 <= * <= 90; 
@@ -110,12 +111,12 @@ class Latitude is NavAngle is export {
 	multi method add( Latitude $l ) {
 		self.value += $l.value;
 		self.value = 90 if self.value > 90;				#clamp to 90°
-		return self 
+		return self
 	}    
 	multi method subtract( Latitude $l ) {
 		self.value -= $l.value;
 		self.value = -90 if self.value < -90;			#clamp to -90°
-		return self 
+		return self
 	}
 
 	#| override .in to perform identity 1' (Latitude) == 1 nmile
@@ -148,12 +149,11 @@ class Longitude is NavAngle is export {
 	multi method add( Longitude $l ) {
 		self.value += $l.value;
 		self.value -= 360 if self.value > 180;			#overflow from +180 to -180
-		return self 
+		return self
 	}    
 	multi method subtract( Longitude $l ) {
-		self.value -= $l.value;
 		self.value += 360 if self.value <= -180;		#underflow from -180 to +180
-		return self 
+		return self
 	}    
 }
 
@@ -190,11 +190,11 @@ class Bearing is NavAngle {
 	}
 
 	multi method add( Bearing $r ) {
-		self.value += $r.value % 360;
+		self.value = ( self.value + $r.value ) % 360;
 		return self 
 	}
 	multi method subtract( Bearing $r ) {
-		self.value -= $r.value % 360;
+		self.value = ( self.value - $r.value ) % 360;
 		return self 
 	}
 
@@ -259,6 +259,7 @@ class Variation is Bearing is export {
 		nextwith( :rev<Ve>, :fmt<%02d> );
 	}
 }
+
 class Deviation is Bearing is export {
 	has Real  $.value is rw where -180 <= * <= 180;
 
@@ -375,7 +376,7 @@ class Velocity { ... }
 
 class Vector is export   {
 	has BearingTrue $.θ;
-	has Length      $.d;  #Distance isa Length
+	has Length      $.d;
 
 	method Str {
 		qq|($.θ, {$.d.in('nmile')})|
@@ -405,48 +406,54 @@ class Velocity is export {
 
 ######### Course and Tide ###########
 
-our $boat-speed-default = Speed.new( value => 10, units => 'knots' );
-our $interval-default   = Time.new(  value => 1,  units => 'hours' );
+our %course-info is export = %(
+	leeway     => CourseAdj.new( value => 0,  compass => <Sb> ),
+	interval   => Time.new( value => 1,  units => 'hours' ),
+	boat-speed => Speed.new( value => 5, units => 'knots' ),
+);
 
-#| Course embodies the vector identity - CTS = COG + TAV + CAB [+Leeway]
-#| Course To Steer, Course Over Ground, Tide Average Vector?, Course Adj Bearing
-#| there is an implicit duration since TAV is tide Speed (knots) + Bearing
-#| so run the Course for the interval and it will move you from Start to Finish Position
+#| Course embodies the vector identity - CTS = COG + TAV [+leeway]
+#| Course To Steer, Course Over Ground, Tide Average Velocity
+#| there is an implicit time interval since TAV is tide Speed (knots) + Bearing
+
 class Course is export {
-    has Speed   $.boat-speed = $boat-speed-default;
-    has Time    $.interval   = $interval-default;
-    has Bearing $.COG where *.compass eq <T>;
+	has BearingTrue $.over-ground;
+	has Velocity    $.tidal-flow;
 
+	has CourseAdj   $.leeway     = %course-info<leeway>;
+	has Time        $.interval   = %course-info<interval>;
+	has Speed       $.boat-speed = %course-info<boat-speed>;
 
+	method Str {
+		"Course to steer: " ~ self.to-steer
+	}
+
+	#calculate via unit vectors (ie. movement over one interval)
+	method over-ground-uv( --> Vector ) {
+		Vector.new( θ =>  $.over-ground,
+					d => ($.boat-speed * $.interval) );
+	}
+	method tidal-flow-uv( --> Vector ) {
+		$.tidal-flow.multiply( $.interval );
+	}
+
+	method to-steer-uv( --> Vector ) {
+		#solve as triangle of vectors
+		my \A = Position.new( ♓️<51.5072°N>, ♓️<0.1276°W> );   #a random start position
+		my \B = A.move( $.over-ground-uv );
+		my \C = A.move( $.tidal-flow-uv );
+
+		#B-C is the course to steer unit vector
+		C.diff(B)
+	}
+
+	method to-steer( --> Bearing ) {
+		$.to-steer-uv.θ + $.leeway
+	}
+
+	method speed-over-ground( --> Speed ) {
+		$.boat-speed * ( $.over-ground-uv.d / $.to-steer-uv.d )
+	}
 }
-
-######## Replace ♎️ with ♓️ #########
-#to do NavAngle specific defn-extract!
-
-sub do-decl( $left is rw, $right ) {
-    #declaration with default
-    if $left ~~ NavAngle {
-        $left .=new( $right );
-    } else {
-        $left = NavAngle.new( $right );
-    }
-}
-
-#declaration with default
-multi infix:<♓️> ( Any:U $left is rw, NavAngle:D $right ) is equiv( &infix:<=> ) is export {
-    do-decl( $left, $right );
-}
-multi infix:<♓️> ( Any:U $left is rw, Str:D $right ) is equiv( &infix:<=> ) is export {
-    do-decl( $left, $right );
-}
-
-#assignment
-multi infix:<♓️> ( NavAngle:D $left, NavAngle:D $right ) is equiv( &infix:<=> ) is export {
-    $left.assign( $right );
-}
-multi infix:<♓️> ( NavAngle:D $left, Str:D $right ) is equiv( &infix:<=> ) is export {
-    $left.assign( $right );
-}
-
 
 #EOF
