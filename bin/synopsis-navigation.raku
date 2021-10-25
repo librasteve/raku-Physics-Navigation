@@ -84,6 +84,19 @@ say ~$course,  ' ... ', $course.^name;
 say $course.to-steer;
 say $course.speed-over-ground.in('knots');
 
+my Fix @landmarks;
+
+@landmarks.push: Fix.new( direction => ♓️<112°T>,
+                          location  => Position.new( ♓️<51.5072°N>, ♓️<0.1276°W> ) );
+@landmarks.push: Fix.new( direction => ♓️<25°T>,
+                          location  => Position.new( ♓️<51.6°N>, ♓️<0.1276°W> ) );
+@landmarks.push: Fix.new( direction => ♓️<237°T>,
+                          location  => Position.new( ♓️<51.5072°N>, ♓️<0.14°W> ) );
+say @landmarks.join(', ');
+
+my Estimate $estimated .= new( fixes => @landmarks );
+say ~$estimated;
+
 
 
 

@@ -10,10 +10,10 @@ use Physics::Measure;
 ##  - ESE
 ##  - Course class - COG, CTS, COW, Tide, Leeway
 ##  - my Position $p3 .=new( $lat2, ♓️<22°E> ); [Position as 2 Str]
+##  - Fixes
 #TODOs...
 ##  - Transits
-##  - Fixes
-##  - DR and EP (an EP is a Position that's a result of 2+ Fixes - 'cocked hat')
+##  - EP (an EP is a Position that's a result of 2+ Fixes - 'cocked hat')
 ##  - Passages - Milestones and Legs
 ##  - Tide ladders
 ##  - Buoys (grammar)
@@ -304,6 +304,7 @@ class CourseAdj is Bearing is export {
 
 constant \earth_radius = 6371e3;		# mean earth radius in m
 
+class Fix { ... }
 class Vector { ... }
 
 class Position is export {
@@ -367,9 +368,38 @@ class Position is export {
 		Position.new(
 			lat  => Latitude.new(  value => ( φ2 * 180 / π ) ),
 			long => Longitude.new( value => ( ( λ2 * 180 / π ) + 540 ) % 360 - 180 ),
-		)													   #^^^^ normalise to 0-360
+		)													    #^^^ normalises to 0-360
 	}
 }
+
+######### Fixes and Estimation ###########
+
+class Fix is export {
+	has BearingTrue $.direction;
+	has Position    $.location;
+
+	method Str {
+		"Fix on Bearing {~$.direction} to Position {~$.location}"
+	}
+}
+
+class Estimate is Position is export {
+	has Fix @!fixes where *.elems >= 2;
+
+	method position( --> Position ) {
+		Position.new( ♓️<51.5072°N>, ♓️<0.1276°W> )
+	}
+
+	method uncertainty( --> Length ) {
+		♓️<124m>
+	}
+
+	method Str {
+		"Estimated Position {~$.position} with Uncertainty {~$.uncertainty}"
+	}
+}
+
+######### Vector and Velocity ###########
 
 #| Velocity = Vector / Time
 class Velocity { ... }
@@ -455,5 +485,6 @@ class Course is export {
 		$.boat-speed * ( $.over-ground-uv.d / $.to-steer-uv.d )
 	}
 }
+
 
 #EOF
