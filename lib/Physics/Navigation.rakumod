@@ -12,18 +12,19 @@ use Physics::Measure;
 ##  - my Position $p3 .=new( $lat2, ♓️<22°E> ); [Position as 2 Str]
 ##  - Fixes
 ##  - EP with 2+ Fixes
+##  - Transits
 
 ## version 2 backlog
-##  - Buoys (grammar)
+##  - Buoys
 ##  - Lights (grammar)
-##  - Transits
 ##  - Estimates with 3 Fixes (cocked hat)
 ##  - Uncertainty
 ##  - Passages - Milestones and Legs
-##  - Tide ladders
+##  - Tide ladders (rule of 12ths)
 ##  - Beaufort scale
 ##  - Sea state scale
 ##  - Visibility scale
+##  - Vessels
 
 
 my $db = 0;                 #debug
@@ -354,7 +355,7 @@ class Position is export {
 		) 
 	}
 
-	#| Vector = Position1.diff( Position2 );
+	#| Vector-1to2 = Position1.diff( Position2 );
 	method diff(Position $p) {
 		Vector.new( θ => $.forward-azimuth($p), d => $.haversine-dist($p) )
 	}
@@ -378,7 +379,42 @@ class Position is export {
 	}
 }
 
-######### Fixes and Estimation ###########
+######### Vector and Velocity ###########
+
+#| Velocity = Vector / Time
+class Velocity { ... }
+
+class Vector is export   {
+	has BearingTrue $.θ;
+	has Length      $.d;
+
+	method Str {
+		qq|($.θ, {$.d.in('nmile')})|
+	}
+	method divide( Time $t ) {
+		Velocity.new(
+			θ => $.θ,
+			s => $.d / $t,
+			)
+	}
+}
+
+class Velocity is export {
+	has BearingTrue $.θ;
+	has Speed       $.s;
+
+	method Str {
+		qq|($.θ, {$.s.in('knots')})|
+	}
+	method multiply( Time $t ) {
+		Vector.new(
+			θ => $.θ,
+			d => $.s * $t,
+			)
+	}
+}
+
+######### Fixes, Estimates, Transits ###########
 
 class Fix is export {
 	has BearingTrue $.direction;
@@ -389,11 +425,11 @@ class Fix is export {
 	}
 }
 
-class Estimate is Position is export {
+class Estimate is export {
 	has Fix $.fix-A;
 	has Fix $.fix-B;
 
-	method position {
+	method position( --> Position ) {
 		# create and solve as Angle-Side-Angle (ASA), C is the unknown
 		# viz. https://www.mathsisfun.com/algebra/trig-solving-asa-triangles.html
 
@@ -428,38 +464,15 @@ class Estimate is Position is export {
 	}
 }
 
-######### Vector and Velocity ###########
+class Transit is export {
+	has Position $.pos-A;
+	has Position $.pos-B;
 
-#| Velocity = Vector / Time
-class Velocity { ... }
+	method aligned( Position:D $pos-C --> Order ) {
+		say my \CtoA = $pos-C.diff($.pos-A).θ;
+		say my \CtoB = $pos-C.diff($.pos-B).θ;
 
-class Vector is export   {
-	has BearingTrue $.θ;
-	has Length      $.d;
-
-	method Str {
-		qq|($.θ, {$.d.in('nmile')})|
-	}
-	method divide( Time $t ) {
-		Velocity.new(
-			θ => $.θ,
-			s => $.d / $t,
-		) 
-	}
-}
-
-class Velocity is export {
-	has BearingTrue $.θ;
-	has Speed       $.s;
-
-	method Str {
-		qq|($.θ, {$.s.in('knots')})|
-	}
-	method multiply( Time $t ) {
-		Vector.new(
-			θ => $.θ,
-			d => $.s * $t,
-		) 
+		CtoA.value.round(1) cmp CtoB.value.round(1)
 	}
 }
 
@@ -514,6 +527,166 @@ class Course is export {
 		$.boat-speed * ( $.over-ground-uv.d / $.to-steer-uv.d )
 	}
 }
+
+######### Buoys and Lights ###########
+
+enum IALA     is export <A B>;         					#EMEA, Americas
+enum Pattern  is export <Solid Layers Stripey>;
+enum Outline  is export <Can Cone None>;
+enum Shape    is export <Ball Cross Down Up>;			#[0] is top of Buoy
+enum Colour   is export <Black Green Red White Yellow>; #[0] is top of Buoy
+
+our $IALA is export;
+our %iala-colours = %( A => [Red, Green], B => [Green, Red] );  #B => red right returning
+
+#for example, this code Fl(4)15s37m28M should produce this sentence...
+#"Flashes 4 times every 15 seconds at height of 37m above MHWS range 28Miles in clear visibility."
+grammar LightCode {
+	token TOP		{ <kind> ['.']? <group>? <colour>? <extra>? <period> <height>? <visibility>? }
+
+	token kind		{ <veryquick> | <quick> | <flashing> | <fixed> | <occulting> | <isophase> }
+	token veryquick { 'VQ' }
+	token quick		{  'Q' }
+	token flashing	{ 'Fl' }
+	token fixed		{ 'F'  }
+	token occulting { 'Oc' }
+	token isophase	{ 'Iso' }
+
+	token group		{ '(' <digits> ')' }
+	token colour	{ <[GRW]>+ }
+	token extra		{ '+L Fl.' }
+	token period	{ <digits> 's' }
+	token height	{ <digits> 'm' }
+	token visibility {<digits> 'M' }
+	token digits	{ \d* }
+}
+
+class LightCode-actions {
+	method TOP($/)  {
+		my @p;
+		@p.push: $/<kind>.made;
+		@p.push: $/<group>.made;
+		@p.push: $/<colour>.made;
+		@p.push: $/<extra>.made;
+		@p.push: $/<period>.made;
+		@p.push: $/<height>.made;
+		@p.push: $/<visibility>.made;
+
+		$/.make: @p.grep({.so}).join(' ')
+	}
+	method kind($/) {
+		given $/ {
+			when 'VQ'  { $/.make: 'Flashes very quickly' }
+			when  'Q'  { $/.make: 'Flashes quickly' }
+			when 'Fl'  { $/.make: 'Flashes' }
+			when 'F'   { $/.make: 'Fixed' }
+			when 'Oc'  { $/.make: 'Occulting' }
+			when 'Iso' { $/.make: 'Isophase' }
+		}
+	}
+	method group($/) {
+		$/.make: ~$/<digits> ~ ' times'
+	}
+	method colour($/) {
+		my %palette = %( G => 'green', R => 'red', W => 'white' );
+		$/.make: %palette{~$/}
+	}
+	method extra($/) {
+		$/.make: 'plus one long'
+	}
+	method period($/) {
+		$/.make: 'every ' ~ ~$/<digits> ~ ' seconds'
+	}
+	method height($/) {
+		$/.make: 'at height of ' ~ ~$/<digits> ~ 'm above MHWS'
+	}
+	method visibility($/) {
+		$/.make: 'range ' ~ ~$/<digits> ~ 'nmiles in clear visibility'
+	}
+}
+
+role Light is export {
+	has Str    $.light-defn = '';
+
+	method light( --> Str ) {
+		LightCode.parse($.light-defn, actions => LightCode-actions.new).made
+	}
+}
+
+class Buoy does Light is export {
+	has Position $.position is required;
+
+	has Pattern  $.pattern = Layers;
+	has Outline  $.outline = None;
+	has Colour   @.colours = [];
+	has Shape    @.shapes  = [];
+
+	method Str( --> Str ) {
+		my $name = self.^name;
+		$name ~~ s/'Physics::Navigation::'//;
+		qq:to/END/;
+		$name Buoy at {self.position}
+		Colours:{@.colours.join(',')}. Shapes:{@.shapes.join(',')}. Outline:{$.outline}. Pattern:{$.pattern}.
+		{self.light}
+		END
+	}
+}
+
+class Lateral is Buoy is export {
+	has Pattern  $.pattern = Solid;
+
+	multi method colours( Int $i --> Array ) {
+		[%iala-colours{$IALA}[$i],]
+	}
+	method light-defn( --> Str ) {
+		my $ci = $.colours[0].substr(0,1).uc;
+		"Fl.{$ci}5s"
+	}
+}
+class PortLateral is Lateral is export {
+	has Outline  $.outline = Can;
+	multi method colours { samewith( 0 ) }
+}
+class StarboardLateral is Lateral is export {
+	has Outline  $.outline = Cone;
+	multi method colours { samewith( 1 ) }
+}
+
+class NorthCardinal is Buoy is export {
+	has Colour   @.colours = ( Black, Yellow, );
+	has Shape    @.shapes  = ( Up, Up, );
+	has Str      $.light-defn = 'Q';
+}
+class EastCardinal is Buoy is export {
+	has Colour   @.colours = ( Black, Yellow, Black, );
+	has Shape    @.shapes  = ( Up, Down, );
+	has Str      $.light-defn = 'Q(3)10s';
+}
+class SouthCardinal is Buoy is export {
+	has Colour   @.colours = ( Yellow, Black, );
+	has Shape    @.shapes  = ( Down, Down, );
+	has Str      $.light-defn = 'Q(6)+L Fl.15s';
+}
+class WestCardinal is Buoy is export {
+	has Colour   @.colours = ( Yellow, Black, Yellow, );
+	has Shape    @.shapes  = ( Down, Up, );
+	has Str      $.light-defn = 'Q(9)15s';
+}
+
+class Danger is Buoy is export {
+	has Colour   @.colours = ( Black, Red, Black, Red, );
+	has Shape    @.shapes  = ( Ball, Ball, );
+}
+
+class Fairway is Buoy is export {
+	has Pattern  $.pattern = Stripey;
+	has Colour   @.colours = ( Red, White, );
+	has Shape    @.shapes  = ( Cross, );
+}
+
+
+
+
 
 
 #EOF

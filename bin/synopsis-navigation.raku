@@ -62,17 +62,25 @@ my $tidal-flow = Velocity.new( θ => ♓️<112°T>, s => ♓️'2.2 knots' );
 my Course $course .= new( over-ground => ♓️<22°T>, :$tidal-flow );  say ~$course;
 say $course.speed-over-ground.in('knots');
 
+my $pos-A = Position.new( ♓️<51.5072°N>, ♓️<0.1276°W> );
+my $pos-B = Position.new( ♓️<51.5072°N>, ♓️<0.1110°W> );
+my $pos-C = Position.new( ♓️<51.5072°N>, ♓️<0.1100°W> );
 
-my $fix-A = Fix.new( direction => ♓️<112°T>,
-                     location  => Position.new( ♓️<51.5072°N>, ♓️<0.1276°W> ) );
-my $fix-B = Fix.new( direction => ♓️<25°T>,
-                     location  => Position.new( ♓️<51.6°N>, ♓️<0.1276°W> ) );
+my $fix-A = Fix.new( direction => ♓️<112°T>, location  => $pos-A );
+my $fix-B = Fix.new( direction => ♓️<25°T>,  location  => $pos-B );
 
 my $ep = Estimate.new( :$fix-A, :$fix-B );      say ~$ep;
 
+my $tr = Transit.new( :$pos-A, :$pos-B );       say $tr.aligned( $pos-C );
 
+my $scm = SouthCardinal.new( position => $pos-A );
+say $scm.light-defn;
+say ~$scm;
 
-
+$IALA = A;
+my $plm = PortLateral.new( position => $pos-B );
+say $plm.light-defn;
+say ~$plm;
 
 
 
