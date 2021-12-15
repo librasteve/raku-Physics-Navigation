@@ -4,7 +4,7 @@ LABEL version="6.0.2" maintainer="JJ Merelo <jjmerelo@GMail.com>"
 ARG DIR="/test"
 USER root
 
-# Add raku-physics-measure for quicker test
+# Add raku-physics-measure depedencies
 RUN zef install Physics::Measure
 
 # Set up dirs
