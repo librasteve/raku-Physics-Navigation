@@ -9,18 +9,18 @@ my Distance $d1   .=new( value => 42,  units => 'nmile' );	say ~$d1;
 my Time     $t1   .=new( value => 1.5, units => 'hr' );		say ~$t1;
 my Latitude $lat1 .=new( value => 45, compass => <N> );		say ~$lat1;
 
-my $d2 = ♓️'42 nmile';							say ~$d2;
-my $t2 = ♓️'1.5 hr';							say ~$t2;
-my $s2 = $d2 / $t2;								say ~$s2.in('knots');
+my $d2 = ♓️'42 nmile';						say ~$d2;
+my $t2 = ♓️'1.5 hr';						say ~$t2;
+my $s2 = $d2 / $t2;						say ~$s2.in('knots');
 
-my $lat2 = ♓️<43°30′30″S>;						say ~$lat2;
-my $lat3 = in-lat( $d1 );						say ~$lat3;
+my $lat2 = ♓️<43°30′30″S>;					say ~$lat2;
+my $lat3 = in-lat( $d1 );					say ~$lat3;
 
 my $d3 = $lat2.in('nmiles');					say ~$d3;
-my $d4 = $d3 * 2;								say ~$d4;
+my $d4 = $d3 * 2;						say ~$d4;
 
-my $long1 = ♓️<45°W>;							say ~$long1;
-my $long2 = ♓️<22°E>;							say ~$long2;
+my $long1 = ♓️<45°W>;						say ~$long1;
+my $long2 = ♓️<22°E>;						say ~$long2;
 
 my $lat4 = $lat2 - $lat1;                       say ~$lat4;
 
@@ -43,18 +43,18 @@ try {
 }
 if $! { say "Something failed ... $!" }
 
-my Position $start .=new( $lat1, $long1 );		say ~$start;
-my Position $dest  .=new( $lat2, $long2 );		say ~$dest;
+my Position $start .=new( $lat1, $long1 );	say ~$start;
+my Position $dest  .=new( $lat2, $long2 );	say ~$dest;
 
 say ~$start.haversine-dist($dest).in('km'); 
 say ~$start.forward-azimuth($dest); 
 
-my $vect  = $start.diff($dest);					say ~$vect;
-my $dest2 = $start.move($vect);					say ~$dest2;
+my $vect  = $start.diff($dest);			say ~$vect;
+my $dest2 = $start.move($vect);			say ~$dest2;
 
-my $dur   = ♓️'3 weeks';						say ~$dur;
-my $vel   = $vect.divide: $dur;					say ~$vel;
-my $vect2 = $vel.multiply: $dur;				say ~$vect2;
+my $dur   = ♓️'3 weeks';			say ~$dur;
+my $vel   = $vect.divide: $dur;			say ~$vel;
+my $vect2 = $vel.multiply: $dur;		say ~$vect2;
 
 %course-info<leeway> = CourseAdj.new( value => 1, compass => <Pt> );
 my $tidal-flow = Velocity.new( θ => ♓️<112°T>, s => ♓️'2.2 knots' );
@@ -81,6 +81,3 @@ $IALA = A;
 my $plm = PortLateral.new( position => $pos-B );
 say $plm.light-defn;
 say ~$plm;
-
-
-
