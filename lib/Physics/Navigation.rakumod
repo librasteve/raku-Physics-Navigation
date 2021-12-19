@@ -11,11 +11,11 @@ use Physics::Measure;
 ##  - Course class - COG, CTS, COW, Tide, Leeway
 ##  - my Position $p3 .=new( $lat2, ♓️<22°E> ); [Position as 2 Str]
 ##  - Fixes
+##  - EP with 2 Fixes
 ##  - Buoys
 ##  - Lights (grammar)
 
 ## version 2 backlog
-##  - EP with 2 Fixes
 ##  - Transits
 ##  - Estimates with 3 Fixes (cocked hat)
 ##  - Uncertainty
