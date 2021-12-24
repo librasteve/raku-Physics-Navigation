@@ -20,13 +20,16 @@ is λ1, <045°0′E>,                       'long1';
 my \ϕ2 = ♓️<43°30′30″S>;
 is ϕ2, <43°30.5′S>,                     'lat2';
 
-my \λ2 = ♓️<045°0′E>;
+my \λ2 = ♓️<022°0′W>;
 is λ2, <022°0′W>,                       'long2';
 
-        $Physics::Measure::round-val = 10;
+$Physics::Measure::round-val = 10;
 
-my $start  = Position.new( ϕ1, λ1 );        say "$start";
-my $finish = Position.new( ϕ2, λ2 );        say "$finish";
+my $start  = Position.new( ϕ1, λ1 );
+is $start, '(45°0′N, 045°0′E)',         'start';
+
+my $finish = Position.new( ϕ2, λ2 );
+is $finish, '(45°0′N, 045°0′E)',         'finish';
 
 done-testing;
 
