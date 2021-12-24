@@ -329,6 +329,8 @@ class Position is export {
 
 	# this.delta(that) => (that - this)
 	method Δ( $p ) {
+		say $p.long, $.long;
+		say $p.long - $.long;
 		Position.new( ($p.lat - $.lat), ($p.long - $.long) )
 	}
 
