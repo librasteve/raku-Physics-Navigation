@@ -11,13 +11,13 @@ my Latitude $lat1 .=new( value => 45, compass => <N> );		say ~$lat1;
 
 my $d2 = ♓️'42 nmile';						say ~$d2;
 my $t2 = ♓️'1.5 hr';						say ~$t2;
-my $s2 = $d2 / $t2;						say ~$s2.in('knots');
+my $s2 = $d2 / $t2;						    say ~$s2.in('knots');
 
 my $lat2 = ♓️<43°30′30″S>;					say ~$lat2;
 my $lat3 = in-lat( $d1 );					say ~$lat3;
 
-my $d3 = $lat2.in('nmiles');					say ~$d3;
-my $d4 = $d3 * 2;						say ~$d4;
+my $d3 = $lat2.in('nmiles');				say ~$d3;
+my $d4 = $d3 * 2;						    say ~$d4;
 
 my $long1 = ♓️<45°W>;						say ~$long1;
 my $long2 = ♓️<22°E>;						say ~$long2;
@@ -49,12 +49,12 @@ my Position $finish .=new( $lat2, $long2 );	say ~$finish;
 say ~$start.haversine-dist($finish).in('km');
 say ~$start.forward-azimuth($finish);
 
-my $vect  = $start.diff($finish);			say ~$vect;
-my $finish2 = $start.move($vect);			say ~$finish2;
+my $vector  = $start.diff($finish);			say ~$vector;
+my $finish2 = $start.move($vector);			say ~$finish2;
 
-my $dur   = ♓️'3 weeks';			say ~$dur;
-my $vel   = $vect.divide: $dur;			say ~$vel;
-my $vect2 = $vel.multiply: $dur;		say ~$vect2;
+my $dur     = ♓️'3 weeks';			        say ~$dur;
+my $vel     = $vector.divide: $dur;			say ~$vel;
+my $vector2 = $vel.multiply: $dur;		    say ~$vector2;
 
 %course-info<leeway> = CourseAdj.new( value => 1, compass => <Pt> );
 my $tidal-flow = Velocity.new( θ => ♓️<112°T>, s => ♓️'2.2 knots' );
