@@ -46,13 +46,13 @@ my $finish2 = $start.move($vector);
 is $finish2, '(43°30′S, 022°0′W)',          'finish2';
 
 my $dur     = ♓️'3 weeks';
-is $dur, '3week',                           'duration';
+is ~$dur, '3week',                           'duration';
 
 my $vel     = $vector.divide: $dur;
-is $vel, '(179°S (T), 10.7knot)',           'velocity';
+is $vel, '(224°SW (T), 10knot)',           'velocity';
 
 my $vector2 = $vel.multiply: $dur;
-is $vector2, '(179°S (T), 5410.7nmile)',    'vector2';
+is $vector2, '(224°SW (T), 6400nmile)',    'vector2';
 
 done-testing;
 
