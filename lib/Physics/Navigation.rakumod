@@ -159,6 +159,7 @@ class Longitude is NavAngle is export {
 		return self
 	}    
 	multi method subtract( Longitude $l ) {
+		say "yo";
 		self.value += 360 if self.value <= -180;		#underflow from -180 to +180
 		return self
 	}    
