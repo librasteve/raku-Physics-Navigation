@@ -34,12 +34,15 @@ is $finish, '(43°30′S, 022°0′W)',         'finish';
 is $start.haversine-dist($finish).in('km'), '10080km',  'haversine';
 is $start.forward-azimuth($finish),         '196°SSW (T)', 'azimuth';
 
-my $vector  = $start.diff($finish);			say ~$vector;
-my $finish2 = $start.move($vector);			say ~$finish2;
+my $vector  = $start.diff($finish);
+is $vector, '(196°SSW (T), 5440nmile)',     'vector';
 
-my $dur     = ♓️'3 weeks';			        say ~$dur;
-my $vel     = $vector.divide: $dur;			say ~$vel;
-my $vector2 = $vel.multiply: $dur;		    say ~$vector2;
+my $finish2 = $start.move($vector);
+is $finish2, '(43°30′S, 023°0′E)',          'finish2';
+
+#my $dur     = ♓️'3 weeks';			        say ~$dur;
+#my $vel     = $vector.divide: $dur;			say ~$vel;
+#my $vector2 = $vel.multiply: $dur;		    say ~$vector2;
 
 done-testing;
 
