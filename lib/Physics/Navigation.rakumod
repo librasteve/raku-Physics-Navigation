@@ -40,21 +40,19 @@ our $deviation = Deviation.new( value => 0, compass => <Dw> );
 class NavAngle is Angle {
 	has $.units where *.name eq '°';
 
-	multi method new( Str:D $s ) {						say "NA new from Str ", $s; # if $db;
+	multi method new( Str:D $s ) {						say "NA new from Str ", $s if $db;
         my ($value, $compass) = NavAngle.defn-extract( $s );
 		my $type;
-	say $compass;
 		given $compass {
 			when <N S>.any   { $type = 'Latitude' }
 			when <E W>.any   { $type = 'Longitude' }
 			when <T>.any	 { $type = 'BearingTrue' }
 			when <M>.any	 { $type = 'BearingMag' }
-			when <Ve Vw>.any { $type = 'Variation'; say "yo" }
+			when <Ve Vw>.any { $type = 'Variation' }
 			when <De Dw>.any { $type = 'Deviation' }
 			when <Pt Sb>.any { $type = 'CourseAdj' }
 			default			 { nextsame }
 		}
-	say $type;
         ::($type).new( :$value, :$compass );
     }
     multi method new( :$value!, :$units, :$compass ) {	say "NA new from attrs" if $db; 
