@@ -27,7 +27,7 @@ use Physics::Measure;
 ##  - Vessels
 
 
-my $db = 0;                 #debug
+my $db = 1;                 #debug
 
 our $round-val := $Physics::Measure::round-val;     #NB. Bearings always round to 1 degree
 
@@ -40,7 +40,7 @@ our $deviation = Deviation.new( value => 0, compass => <Dw> );
 class NavAngle is Angle {
 	has $.units where *.name eq '°';
 
-	multi method new( Str:D $s ) {						say "NA new from Str ", $s;# if $db;
+	multi method new( Str:D $s ) {						say "NA new from Str ", $s if $db;
         my ($value, $compass) = NavAngle.defn-extract( $s );
 		my $type;
 		given $compass {
