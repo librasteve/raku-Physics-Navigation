@@ -31,11 +31,6 @@ is $start, '(45°0′N, 045°0′E)',         'start';
 my $finish = Position.new( ϕ2, λ2 );
 is $finish, '(43°30′S, 022°0′W)',         'finish';
 
-say ϕ1.value;
-say λ1.value;
-say ϕ2.value;
-say λ2.value;
-
 is $start.haversine-dist($finish).in('km'), '11860km',  'haversine';
 is $start.forward-azimuth($finish),         '224°SW (T)', 'azimuth';
 
@@ -46,7 +41,7 @@ my $finish2 = $start.move($vector);
 is $finish2, '(43°30′S, 022°0′W)',          'finish2';
 
 my $dur     = ♓️'3 weeks';
-dd $dur;
+#dd $dur;
 ok +$dur == 3,                              'duration';
 #is ~$dur, '3week',                           'duration';
 
@@ -57,8 +52,3 @@ my $vector2 = $vel.multiply: $dur;
 is $vector2, '(224°SW (T), 6400nmile)',    'vector2';
 
 done-testing;
-
-#
-#my Length $c .= new: $b;
-#ok $c.value == 1e1,         '$c.value';
-#is $c.units,  'm',          '$c.units';
