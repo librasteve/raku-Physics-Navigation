@@ -47,7 +47,8 @@ is $finish2, '(43°30′S, 022°0′W)',          'finish2';
 
 my $dur     = ♓️'3 weeks';
 dd $dur;
-is ~$dur, '3week',                           'duration';
+ok +$dur == 3,                              'duration';
+#is ~$dur, '3week',                           'duration';
 
 my $vel     = $vector.divide: $dur;
 is $vel, '(224°SW (T), 10knot)',           'velocity';
