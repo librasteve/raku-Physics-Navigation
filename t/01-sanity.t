@@ -31,7 +31,7 @@ is $start, '(45°0′N, 045°0′E)',         'start';
 my $finish = Position.new( ϕ2, λ2 );
 is $finish, '(43°30′S, 022°0′W)',         'finish';
 
-
+say ϕ2.value;
 say λ2.value;
 
 is $start.haversine-dist($finish).in('km'), '10080km',  'haversine';
