@@ -53,6 +53,7 @@ class NavAngle is Angle {
 			when <Pt Sb>.any { $type = 'CourseAdj' }
 			default			 { nextsame }
 		}
+	say $type;
         ::($type).new( :$value, :$compass );
     }
     multi method new( :$value!, :$units, :$compass ) {	say "NA new from attrs" if $db; 
