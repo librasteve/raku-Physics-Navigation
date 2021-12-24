@@ -46,6 +46,7 @@ my $finish2 = $start.move($vector);
 is $finish2, '(43°30′S, 022°0′W)',          'finish2';
 
 my $dur     = ♓️'3 weeks';
+dd $dur;
 is ~$dur, '3week',                           'duration';
 
 my $vel     = $vector.divide: $dur;
