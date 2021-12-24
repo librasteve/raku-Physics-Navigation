@@ -159,7 +159,6 @@ class Longitude is NavAngle is export {
 		return self
 	}    
 	multi method subtract( Longitude $l ) {
-		say "yo";
 		self.value -= $l.value;
 		self.value += 360 if self.value <= -180;		#underflow from -180 to +180
 		return self
@@ -331,8 +330,6 @@ class Position is export {
 
 	# this.delta(that) => (that - this)
 	method Δ( $p ) {
-		say $p.long, $.long;
-		say $p.long - $.long;
 		Position.new( ($p.lat - $.lat), ($p.long - $.long) )
 	}
 
