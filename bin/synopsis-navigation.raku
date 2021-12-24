@@ -43,14 +43,14 @@ try {
 }
 if $! { say "Something failed ... $!" }
 
-my Position $start .=new( $lat1, $long1 );	say ~$start;
-my Position $dest  .=new( $lat2, $long2 );	say ~$dest;
+my Position $start  .=new( $lat1, $long1 );	say ~$start;
+my Position $finish .=new( $lat2, $long2 );	say ~$finish;
 
-say ~$start.haversine-dist($dest).in('km'); 
-say ~$start.forward-azimuth($dest); 
+say ~$start.haversine-dist($finish).in('km');
+say ~$start.forward-azimuth($finish);
 
-my $vect  = $start.diff($dest);			say ~$vect;
-my $dest2 = $start.move($vect);			say ~$dest2;
+my $vect  = $start.diff($finish);			say ~$vect;
+my $finish2 = $start.move($vect);			say ~$finish2;
 
 my $dur   = ♓️'3 weeks';			say ~$dur;
 my $vel   = $vect.divide: $dur;			say ~$vel;
