@@ -67,6 +67,7 @@ my $ep = Estimate.new( :$fix-A, :$fix-B );      say ~$ep;
 
 my $tr = Transit.new( :$pos-A, :$pos-B );       say $tr.aligned( $pos-C );
 
+
 %course-info<leeway> = CourseAdj.new( value => 1, compass => <Pt> );
 my $tidal-flow = Velocity.new( θ => ♓️<112°T>, s => ♓️'2.2 knots' );
 
