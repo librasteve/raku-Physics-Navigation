@@ -27,7 +27,7 @@ my $lat4 = $lat2 - $lat1;                       say ~$lat4;
 $lat1 = ♓️"$lat3";                              say ~$lat1;
 $lat2 = $lat4;                                  say ~$lat2;
 
-$Physics::Navigation::variation = Variation.new( value => 7, compass => <W> );
+$Physics::Navigation::variation =  ♓️<7°Vw>;
 
 my $bear1 = ♓️<80°T>;                           say ~$bear1;
 my $bear2 = ♓️<43°30′30″M>;                     say ~$bear2;
