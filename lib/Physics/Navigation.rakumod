@@ -325,7 +325,7 @@ class Position is export {
 
 	# accessors for radians - φ is latitude, λ is longitude 
 	method φ { +$.lat  * π / 180 }
-	method λ { +$.long * π / 180 }
+	method λ { -$.long * π / 180 }
 
 	method Δ( $p ) {
 		Position.new( ($p.lat - $.lat), ($p.long - $.long) )
