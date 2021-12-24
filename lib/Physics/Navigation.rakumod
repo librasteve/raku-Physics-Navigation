@@ -327,12 +327,13 @@ class Position is export {
 	method φ { +$.lat  * π / 180 }
 	method λ { +$.long * π / 180 }
 
+	# this.delta(that) => (that - this)
 	method Δ( $p ) {
 		Position.new( ($p.lat - $.lat), ($p.long - $.long) )
 	}
 
 	method haversine-dist(Position $p) {
-		my \Δ = $.Δ( $p );
+		my \Δ = $.Δ( $p );	.say;
 
 		my $a = sin(Δ.φ / 2)² + 
 				sin(Δ.λ / 2)² * cos($.φ) * cos($p.φ);
