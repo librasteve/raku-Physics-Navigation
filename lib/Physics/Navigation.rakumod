@@ -86,7 +86,7 @@ class NavAngle is Angle {
         #handle degrees-minutes-seconds <°> is U+00B0 <′> is U+2032 <″> is U+2033
 		#NB different to Measure.rakumod, here arcmin ′? is optional as want eg. <45°N> to parse 
 
-        unless $s ~~ /(<[\d.]>*)\°(<[\d.]>*)\′?(<[\d.]>*)\″?\w*(<[NSEWMTVDPS]><[ewtb]>?)/ { return 0 };
+        unless $s ~~ /(<[\d.]>*)\°(<[\d.]>*)\′?(<[\d.]>*)\″?\w*(<[NSEWMTVDP]><[ewtb]>?)/ { return 0 };
 
 		my $deg where 0 <= * < 360 = $0 % 360;
 		my $min where 0 <= * <  60 = $1 // 0;
