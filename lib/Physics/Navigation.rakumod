@@ -143,14 +143,14 @@ class Longitude is NavAngle is export {
 	has Real  $.value is rw where -180 < * <= 180; 
 
 	multi method compass {								#get compass
-		$.value >= 0 ?? <W> !! <E>
+		$.value >= 0 ?? <E> !! <W>
 	}
 	multi method compass( Str $_ ) {					#set compass
-		$.value = -$.value if $_ eq <E>
+		$.value = -$.value if $_ eq <W> 
 	}
 
 	method Str {
-		nextwith( :rev<E>, :fmt<%03d> );
+		nextwith( :rev<W>, :fmt<%03d> );
 	}
 
 	multi method add( Longitude $l ) {
