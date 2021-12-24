@@ -52,7 +52,7 @@ my $vector2 = $vel.multiply: $dur;
 is $vector2, '(224°SW (T), 6400nmile)',    'vector2';
 
 my $vn = ♓️<7°0′Vw>;
-is $vn, <7°0′Vw>,                           'Variation';
+is $vn, <07°0′Vw>,                          'Variation';
 
 
 done-testing;
