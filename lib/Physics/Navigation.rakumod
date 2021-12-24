@@ -334,7 +334,7 @@ class Position is export {
 	}
 
 	method haversine-dist(Position $p) {
-		my \Δ = $.Δ( $p );	Δ.say;
+		my \Δ = $.Δ( $p );
 
 		my $a = sin(Δ.φ / 2)² + 
 				sin(Δ.λ / 2)² * cos($.φ) * cos($p.φ);

@@ -36,14 +36,14 @@ say λ1.value;
 say ϕ2.value;
 say λ2.value;
 
-is $start.haversine-dist($finish).in('km'), '10080km',  'haversine';
-is $start.forward-azimuth($finish),         '196°SSW (T)', 'azimuth';
+is $start.haversine-dist($finish).in('km'), '111860km',  'haversine';
+is $start.forward-azimuth($finish),         '224°SW (T)', 'azimuth';
 
 my $vector  = $start.diff($finish);
-is $vector, '(196°SSW (T), 5440nmile)',     'vector';
+is $vector, '(224°SW (T), 6400nmile)',     'vector';
 
 my $finish2 = $start.move($vector);
-is $finish2, '(43°30′S, 023°0′E)',          'finish2';
+is $finish2, '(43°30′S, 022°0′W)',          'finish2';
 
 #my $dur     = ♓️'3 weeks';			        say ~$dur;
 #my $vel     = $vector.divide: $dur;			say ~$vel;
