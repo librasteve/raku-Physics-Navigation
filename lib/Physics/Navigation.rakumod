@@ -40,7 +40,7 @@ our $deviation = Deviation.new( value => 0, compass => <Dw> );
 class NavAngle is Angle {
 	has $.units where *.name eq '°';
 
-	multi method new( Str:D $s ) {						say "NA new from Str ", $s if $db;
+	multi method new( Str:D $s ) {						say "NA new from Str ", $s;# if $db;
         my ($value, $compass) = NavAngle.defn-extract( $s );
 		my $type;
 		given $compass {
