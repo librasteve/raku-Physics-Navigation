@@ -547,7 +547,7 @@ our %iala-colours = %( A => [Red, Green], B => [Green, Red] );  #B => red right 
 use Grammar::Tracer;
 
 grammar LightCode {
-	token TOP		{ <kind> ['.']? <group>? <colour>? <extra>? <period> <height>? <visibility>? }
+	token TOP		{ <kind> ['.']? <group>? <colour>? <extra>? <period>? <height>? <visibility>? }
 
 	token kind		{ <veryquick> | <quick> | <flashing> | <fixed> | <occulting> | <isophase> }
 	token veryquick { 'VQ' }
