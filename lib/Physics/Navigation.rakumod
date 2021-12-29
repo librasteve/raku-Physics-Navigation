@@ -662,6 +662,7 @@ role Light is export {
 	}
 
     method light-svg( --> Str ) {
+        say 'yo';
         LightCode.parse($.light-defn, actions => LightCodeSVG-actions.new).made
     }
 }
