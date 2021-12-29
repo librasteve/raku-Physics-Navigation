@@ -563,7 +563,7 @@ grammar LightCode {
 	token period	{ <digits> 's' }
 	token height	{ <digits> 'm' }
 	token visibility {<digits> 'M' }
-	token digits	{ \d* }
+	token digits	{ \d+ }
 }
 
 class LightCode-actions {
