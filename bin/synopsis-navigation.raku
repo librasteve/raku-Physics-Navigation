@@ -78,6 +78,10 @@ my $scm = SouthCardinal.new( position => $pos-A );
 say $scm.light-defn;
 say ~$scm;
 
+my $scm = NorthCardinal.new( position => $pos-A );
+say $scm.light-defn;
+say ~$scm;
+
 $IALA = A;
 my $plm = PortLateral.new( position => $pos-B );
 say $plm.light-defn;
