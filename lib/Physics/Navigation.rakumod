@@ -543,6 +543,9 @@ our %iala-colours = %( A => [Red, Green], B => [Green, Red] );  #B => red right 
 
 #for example, this code Fl(4)15s37m28M should produce this sentence...
 #"Flashes 4 times every 15 seconds at height of 37m above MHWS range 28Miles in clear visibility."
+
+use Grammar::Tracer;
+
 grammar LightCode {
 	token TOP		{ <kind> ['.']? <group>? <colour>? <extra>? <period> <height>? <visibility>? }
 
