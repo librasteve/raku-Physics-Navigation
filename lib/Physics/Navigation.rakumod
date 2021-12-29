@@ -610,6 +610,8 @@ class LightCode-actions {
 	}
 }
 
+# pull in svg example, then do it!
+
 class LightCodeSVG-actions {
     method TOP($/)  {
         my @p;
@@ -636,8 +638,9 @@ class LightCodeSVG-actions {
     method group($/) {
         $/.make: ~$/<digits> ~ ' times'
     }
+    #eg. iamerejh
     method colour($/) {
-        my %palette = %( G => 'green', R => 'red', W => 'white' );
+        my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
         $/.make: %palette{~$/}
     }
     method extra($/) {
