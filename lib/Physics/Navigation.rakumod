@@ -611,6 +611,9 @@ role Light is export {
 	has Str    $.light-defn = '';
 
 	method light( --> Str ) {
+
+        say $.light-defn;
+
 		LightCode.parse($.light-defn, actions => LightCode-actions.new).made
 	}
 }
