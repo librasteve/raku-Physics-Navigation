@@ -610,12 +610,60 @@ class LightCode-actions {
 	}
 }
 
+class LightCodeSVG-actions {
+    method TOP($/)  {
+        my @p;
+        @p.push: $/<kind>.made;
+        @p.push: $/<group>.made;
+        @p.push: $/<colour>.made;
+        @p.push: $/<extra>.made;
+        @p.push: $/<period>.made;
+        @p.push: $/<height>.made;
+        @p.push: $/<visibility>.made;
+
+        $/.make: @p.grep({.so}).join(' ')
+    }
+    method kind($/) {
+        given $/ {
+            when 'VQ'  { $/.make: 'Flashes very quickly' }
+            when  'Q'  { $/.make: 'Flashes quickly' }
+            when 'Fl'  { $/.make: 'Flashes' }
+            when 'F'   { $/.make: 'Fixed' }
+            when 'Oc'  { $/.make: 'Occulting' }
+            when 'Iso' { $/.make: 'Isophase' }
+        }
+    }
+    method group($/) {
+        $/.make: ~$/<digits> ~ ' times'
+    }
+    method colour($/) {
+        my %palette = %( G => 'green', R => 'red', W => 'white' );
+        $/.make: %palette{~$/}
+    }
+    method extra($/) {
+        $/.make: 'plus one long'
+    }
+    method period($/) {
+        $/.make: 'every ' ~ ~$/<digits> ~ ' seconds'
+    }
+    method height($/) {
+        $/.make: 'at height of ' ~ ~$/<digits> ~ 'm above MHWS'
+    }
+    method visibility($/) {
+        $/.make: 'range ' ~ ~$/<digits> ~ 'nmiles in clear visibility'
+    }
+}
+
 role Light is export {
 	has Str    $.light-defn = '';
 
 	method light( --> Str ) {
 		LightCode.parse($.light-defn, actions => LightCode-actions.new).made
 	}
+
+    method light-svg( --> Str ) {
+        LightCode.parse($.light-defn, actions => LightCodeSVG-actions.new).made
+    }
 }
 
 class Buoy does Light is export {
