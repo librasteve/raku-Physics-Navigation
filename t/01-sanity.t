@@ -80,5 +80,10 @@ is $course, 'Course to steer: 002°N (T)',                                   'Co
 
 is $course.speed-over-ground.in('knots'), '6.2knot',                        'speed-over-ground';
 
+my $scm = SouthCardinal.new( position => $pos-A );
+say $scm.light-defn;
+say ~$scm;
+say $scm.light-svg.pattern;
+
 done-testing;
 
