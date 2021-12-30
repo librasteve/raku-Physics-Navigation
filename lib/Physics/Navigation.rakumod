@@ -620,8 +620,8 @@ class LightCode-actions {
 # Flashes red every 5 seconds
 #
 
-# extra == half and half
-# long = 3s
+
+
 
 # occult = invert this
 
@@ -663,6 +663,16 @@ class SVG-animation is export {
 				# -- does not work on attributes
 			}
 		}
+
+		if $!extra {
+			my $ex-start = @p.elems/2;   		# extra = half and half
+			my $ex-beats = 3 / $base-rate;   	# long  = 3s
+			my @e;
+			for ^$ex-beats {
+				@e.push: $!on;
+			}
+			@p.splice: $ex-start, $ex-beats, @e;
+		}
         @p
     }
 
@@ -682,6 +692,7 @@ class LightCodeSVG-actions {
         with $<period>.made {$anime.duration = $_};
         with $<group>.made  {$anime.fl-times = $_; $anime.continuous = False };
         with $<colour>.made {$anime.on       = $_};
+		with $<extra>.made  {$anime.extra    = $_};
 
         $/.make: $anime;
 
@@ -702,17 +713,17 @@ class LightCodeSVG-actions {
         $/.make: SVG-animation.new( :$base-rate, :$continuous );
     }
     method group($/) {
-        $/.make: ~$/<digits>.Int;
+        $/.make: ~$/<digits>.Int
     }
     method colour($/) {
         my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
         $/.make: %palette{~$/}
     }
     method extra($/) {
-        $/.make: 'plus one long'
+        $/.make: True
     }
     method period($/) {
-        $/.make: $/<digits>.Int;
+        $/.make: $/<digits>.Int
     }
 }
 
