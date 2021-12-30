@@ -647,7 +647,8 @@ class LightCodeSVG-actions {
 #        dd $<kind>;
 #        dd $<period>;
 
-        $/.make: $<kind>.made.duration = $<period><digits>.Int
+        $/.make: $<kind>.made.duration = $<period><digits>.Int;
+        say "in TOP...", $/.made;
     }
     method kind($/) {
         # interpretation Flashes = 1s, FQ = 0.5s,
