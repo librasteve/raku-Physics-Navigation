@@ -638,6 +638,7 @@ class SVG-animation is export {
     method pattern {
         my $count = $!duration / $!base-rate;
         say "base-rate is $!base-rate";
+        say "count is $count";
 
         my $on  = '#fff';
         my $off = '#000';
