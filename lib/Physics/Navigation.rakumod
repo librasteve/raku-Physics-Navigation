@@ -648,8 +648,8 @@ class SVG-animation is export {
 		my @p;
 		if $!continuous {
 			for ^$beats {
-				@p.push: $!on;
-				@p.push: $!off;
+				@p.push: $!on, $!off;
+#				@p.push: $!off;
 			}
 		} else {
 			for ^$beats {
