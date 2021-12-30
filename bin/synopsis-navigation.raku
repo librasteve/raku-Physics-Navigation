@@ -76,16 +76,18 @@ say $course.speed-over-ground.in('knots');
 
 my $scm = SouthCardinal.new( position => $pos-A );
 say $scm.light-defn;
-say $scm.light-svg;
 say ~$scm;
 
 my $ncm = NorthCardinal.new( position => $pos-A );
 say $ncm.light-defn;
-say $ncm.light-svg;
 say ~$ncm;
 
 $IALA = A;
 my $plm = PortLateral.new( position => $pos-B );
 say $plm.light-defn;
-say $plm.light-svg;
 say ~$plm;
+
+
+say $scm.light-svg;
+say $ncm.light-svg;
+say $plm.light-svg;
