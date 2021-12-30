@@ -632,7 +632,7 @@ class SVG-animation is export {
     has $.base-rate = 1;
 
 
-    has $.duration = 5;         #total duration/period (s) of flash sequence
+    has $.duration is rw = 5;         #total duration/period (s) of flash sequence
     has @.pattern;
 
     # has @.pattern  = <#800 #f00 #800 #800>;
