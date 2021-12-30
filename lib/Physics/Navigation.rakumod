@@ -649,7 +649,7 @@ class SVG-animation is export {
     }
 
     method Str {
-        say "duration is $.duration; pattern is $.pattern;";
+        say "duration is {$.duration}; pattern is {$.pattern};";
     }
 }
 
