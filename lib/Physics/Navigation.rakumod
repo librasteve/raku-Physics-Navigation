@@ -638,7 +638,7 @@ class SVG-animation is export {
     method pattern {
         my $count = $!duration / $!base-rate;
 
-        my $on = '#fff';
+        my $on  = '#fff';
         my $off = '#000';
 
         my @pattern;
@@ -649,7 +649,7 @@ class SVG-animation is export {
     }
 
     method Str {
-        say "duration is $.duration. pattern is @.pattern";
+        say "duration is $.duration; pattern is $.pattern;";
     }
 }
 
