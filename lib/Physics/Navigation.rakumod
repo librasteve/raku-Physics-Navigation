@@ -647,8 +647,8 @@ class SVG-animation is export {
 		my @p;
 		if $!continuous {
 			for ^$beats {
-				@p.push: $!on;
-				@p.push: $!off;
+				@p.push: $!on, $!off;
+#				@p.push: $!off;
 			}
 		} else {
 			for ^$beats {
@@ -659,19 +659,18 @@ class SVG-animation is export {
 					@p.push: $!off;
 					@p.push: $!off;
 				}
-				$!fl-times -= 1;
-				# -- does not work on attributes
+				$!fl-times -= 1;				# -- does not work on attributes??
 			}
 		}
 
 		if $!extra {
 			my $ex-start = @p.elems / 2;   		# extra = half and half
-			my $ex-beats = 3 / $!base-rate;   	# long  = 3s
+			my $ex-times = 3 / $!base-rate;   	# long  = 3s
 			my @e;
-			for ^$ex-beats {
+			for ^$ex-times {
 				@e.push: $!on;
 			}
-			@p.splice( $ex-start.Int, $ex-beats.Int, @e );
+			@p.splice( $ex-start.Int, $ex-times.Int, @e );
 		}
         @p
     }
@@ -684,18 +683,14 @@ class SVG-animation is export {
 class LightCodeSVG-actions {
 
     method TOP($/)  {
-		#dd $<kind>;
+        my $anime = $<kind>.made;		#dd $<kind>;
 
-        my $anime = $<kind>.made;
+        with $<period>.made {$anime.duration = $_}
+        with $<group>.made  {$anime.fl-times = $_; $anime.continuous = False }
+        with $<colour>.made {$anime.on       = $_}
+		with $<extra>.made  {$anime.extra    = $_}
 
-        with $<period>.made {$anime.duration = $_};
-        with $<group>.made  {$anime.fl-times = $_; $anime.continuous = False };
-        with $<colour>.made {$anime.on       = $_};
-		with $<extra>.made  {$anime.extra    = $_};
-
-        $/.make: $anime;
-
-        #put "in TOP..."; dd $/.made;
+        $/.make: $anime;				#put "in TOP..."; dd $/.made;
     }
     method kind($/) {
         # Flashes = 1s, Quick = 1/2s, V. Quick = 1/4s
