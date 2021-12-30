@@ -725,7 +725,7 @@ role Light is export {
 		LightCode.parse($.light-defn, actions => LightCode-actions.new).made
 	}
 
-    method light-svg( --> Str ) {
+    method light-svg {
         say 'yo';
         LightCode.parse($.light-defn, actions => LightCodeSVG-actions.new).made
     }
