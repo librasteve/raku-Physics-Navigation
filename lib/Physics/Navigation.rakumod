@@ -714,46 +714,6 @@ class LightCodeSVG-actions {
     }
 }
 
-class LightCodeSVG-actionsORIG {
-
-    method TOP($/)  {
-        my @p;
-        @p.push: $/<kind>.made;
-        @p.push: $/<group>.made;
-        @p.push: $/<colour>.made;
-        @p.push: $/<extra>.made;
-        @p.push: $/<period>.made;
-        @p.push: $/<height>.made;
-        @p.push: $/<visibility>.made;
-
-        $/.make: @p.grep({.so}).join(' ')
-    }
-    method kind($/) {
-        given $/ {
-            when 'VQ'  { $/.make: 'Flashes very quickly' }
-            when  'Q'  { $/.make: 'Flashes quickly' }
-            when 'Fl'  { $/.make: 'Flashes' }
-            when 'F'   { $/.make: 'Fixed' }
-            when 'Oc'  { $/.make: 'Occulting' }
-            when 'Iso' { $/.make: 'Isophase' }
-        }
-    }
-    method group($/) {
-        $/.make: ~$/<digits> ~ ' times'
-    }
-    #eg. iamerejh
-    method colour($/) {
-        my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
-        $/.make: %palette{~$/}
-    }
-    method extra($/) {
-        $/.make: 'plus one long'
-    }
-    method period($/) {
-        $/.make: 'every ' ~ ~$/<digits> ~ ' seconds'
-    }
-}
-
 role Light is export {
 	has Str    $.light-defn = '';
 
