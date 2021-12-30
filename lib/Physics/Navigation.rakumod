@@ -643,12 +643,20 @@ class SVG-animation is export {
         my $beats = $!duration / $!base-rate;
 
         my @pattern;
-        for ^$beats {
-            @pattern.push: $!fl-times >= 1 ?? $!on !! $!off;
-            $!fl-times -= 1;            # -- does not work on attributes
 
-            @pattern.push: $!off;
-        }
+		if $!continuous {
+			for ^$beats {
+				@pattern.push: $!on;
+				@pattern.push: $!off;
+			}
+		} else {
+			for ^$beats {
+				@pattern.push: $!fl-times >= 1 ?? $!on !! $!off;
+				$!fl-times -= 1;            # -- does not work on attributes
+
+				@pattern.push: $!off;
+			}
+		}
         @pattern
     }
 
