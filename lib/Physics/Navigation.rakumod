@@ -645,7 +645,7 @@ class SVG-animation is export {
         my @pattern;
         for ^$beats {
             @pattern.push: $!fl-times >= 1 ?? $on !! $off;
-            $!fl-times--;
+            $.fl-times--;
             @pattern.push: $off;
         }
 
