@@ -622,6 +622,7 @@ class LightCode-actions {
 
 # extra == half and half
 # long = 3s
+
 # occult = invert this
 
 
@@ -633,6 +634,7 @@ class SVG-animation is export {
     has $.fl-times is rw = 1;           #number of times to flash
     has $.on       is rw = '#fff';
     has $.off      is rw = '#000';
+	has $.extra    is rw = False;
 
     #   @.pattern  = <#800 #f00 #800 #800>;
     #                 ^^^^ - colour codes (#RGB)
@@ -651,7 +653,13 @@ class SVG-animation is export {
 			}
 		} else {
 			for ^$beats {
-				@pattern.push: $!fl-times >= 1 ?? $!on !! $!off;
+				if $!fl-times >= 1 {
+					@pattern.push: $!on;
+					@pattern.push: $!off;
+				} else {
+					@pattern.push: $!off;
+					@pattern.push: $!off;
+				}
 				$!fl-times -= 1;            # -- does not work on attributes
 			}
 		}
@@ -700,9 +708,9 @@ class LightCodeSVG-actions {
         my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
         $/.make: %palette{~$/}
     }
-#    method extra($/) {
-#        $/.make: 'plus one long'
-#    }
+    method extra($/) {
+        $/.make: 'plus one long'
+    }
     method period($/) {
         $/.make: $/<digits>.Int;
     }
