@@ -644,29 +644,26 @@ class SVG-animation is export {
     method pattern {
         my $beats = $!duration / ( $!base-rate * 2 ); #issue 2 phases per beat
 
-
-		my @pattern;
-		given @pattern {
-			if $!continuous {
-				for ^$beats {
-					.push: $!on;
-					.push: $!off;
+		my @p;
+		if $!continuous {
+			for ^$beats {
+				@p.push: $!on;
+				@p.push: $!off;
+			}
+		} else {
+			for ^$beats {
+				if $!fl-times >= 1 {
+					@p.push: $!on;
+					@p.push: $!off;
+				} else {
+					@p.push: $!off;
+					@p.push: $!off;
 				}
-			} else {
-				for ^$beats {
-					if $!fl-times >= 1 {
-						.push: $!on;
-						.push: $!off;
-					} else {
-						.push: $!off;
-						.push: $!off;
-					}
-					$!fl-times -= 1;
-					# -- does not work on attributes
-				}
+				$!fl-times -= 1;
+				# -- does not work on attributes
 			}
 		}
-        @pattern
+        @p
     }
 
     method Str {
