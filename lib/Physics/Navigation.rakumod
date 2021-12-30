@@ -549,13 +549,13 @@ our %iala-colours = %( A => [Red, Green], B => [Green, Red] );  #B => red right 
 grammar LightCode {
 	token TOP		{ <kind> ['.']? <group>? <colour>? <extra>? <period>? <height>? <visibility>? }
 
-	token kind		{ <veryquick> | <quick> | <flashing> | <fixed> | <occulting> | <isophase> }
+	token kind		{ <veryquick> | <quick> | <flashing> | <fixed> | <isophase> | <occulting> }
 	token veryquick { 'VQ' }
 	token quick		{  'Q' }
 	token flashing	{ 'Fl' }
 	token fixed		{ 'F'  }
-	token occulting { 'Oc' }
 	token isophase	{ 'Iso' }
+	token occulting { 'Oc' }
 
 	token group		{ '(' <digits> ')' }
 	token colour	{ <[GRW]>+ }
@@ -583,10 +583,10 @@ class LightCode-actions {
 		given $/ {
 			when 'VQ'  { $/.make: 'Flashes very quickly' }
 			when  'Q'  { $/.make: 'Flashes quickly' }
-			when 'Fl'  { $/.make: 'Flashes' }
-			when 'F'   { $/.make: 'Fixed' }
+			when 'Fl'  { $/.make: 'Flashes'   }
+			when 'F'   { $/.make: 'Fixed'     }
+			when 'Iso' { $/.make: 'Isophase'  }
 			when 'Oc'  { $/.make: 'Occulting' }
-			when 'Iso' { $/.make: 'Isophase' }
 		}
 	}
 	method group($/) {
@@ -610,22 +610,6 @@ class LightCode-actions {
 	}
 }
 
-# Q(6)+L Fl.15s
-# Flashes quickly 6 times plus one long every 15 seconds
-#
-# Q
-# Flashes quickly
-#
-# Fl.R5s
-# Flashes red every 5 seconds
-#
-
-
-
-
-# occult = invert this
-
-
 #| desired output is SVG-animation object
 class SVG-animation is export {
     has $.base-rate  = 1;
@@ -635,7 +619,7 @@ class SVG-animation is export {
     has $.on         is rw = '#fff';
     has $.off        is rw = '#000';
 	has $.extra      is rw = False;
-	has $.special 	 = False;
+	has $.special 	 = '';
 
     #   @.pattern  = <#800 #f00 #800 #800>;
     #                 ^^^^ - colour codes (#RGB)
@@ -645,26 +629,32 @@ class SVG-animation is export {
     method pattern {
         my $beats = $!duration / ( $!base-rate * 2 ); #issue 2 phases per beat
 
-		my @p;
-#		if $!continuous {
-#			for ^$beats {
-#				@p.push: $!on, $!off;
-#			}
-#		} else {
-			for ^$beats {
-				if $!continuous || $!fl-times >= 1 {
-					@p.push: $!on, $!off;
-				} else {
-					@p.push: $!off, $!off;
-				}
-				$!fl-times -= 1;
-				# -- does not work on attributes
+		given $!special {
+			when 'Fixed' {
+				return( $!on xx ( 2 * $beats ) )
 			}
-#		}
+			when 'Isophase' {
+				return( $!on xx $beats, $!off xx $beats )
+ 			}
+			when 'Occulting' {
+				($!on, $!off) = ($!off, $!on)
+			}
+		}
+
+		my @p;
+		for ^$beats {
+			if $!continuous || $!fl-times >= 1 {
+				@p.push: $!on, $!off;
+			} else {
+				@p.push: $!off, $!off;
+			}
+			$!fl-times -= 1;					# -- does not work on attributes
+		}
 
 		if $!extra {
-			my $ex-start = @p.elems / 2;   		# extra = half and half
+			my $ex-start = $beats;       		# extra = half and half
 			my $ex-beats = 3 / $!base-rate;   	# long  = 3s
+
 			my @e;
 			for ^$ex-beats {
 				@e.push: $!on;
@@ -702,10 +692,10 @@ class LightCodeSVG-actions {
 		given $/ {
             when 'VQ'  { $base-rate = <1/4>; $continuous = True  }
             when  'Q'  { $base-rate = <1/2>; $continuous = True  }
-            when 'Fl'  { $base-rate =  1        }
-            when 'F'   { $special =  'Fixed' }
-            when 'Oc'  { $special =  'Occulting' }
-            when 'Iso' { $special =  'Isophase' }
+            when 'Fl'  { $base-rate =  1   }
+            when 'F'   { $special   = 'Fixed'     }
+            when 'Iso' { $special   = 'Isophase'  }
+			when 'Oc'  { $special   = 'Occulting' }
         }
         $/.make: SVG-animation.new( :$base-rate, :$continuous, :$special );
     }
