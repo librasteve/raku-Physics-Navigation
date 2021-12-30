@@ -80,10 +80,10 @@ is $course, 'Course to steer: 002°N (T)',                                   'Co
 
 is $course.speed-over-ground.in('knots'), '6.2knot',                        'speed-over-ground';
 
-my $scm = SouthCardinal.new( position => $pos-A );
-say $scm.light-defn;
-say ~$scm;
-say $scm.light-svg.pattern;
+$IALA = A;
+my $plm = PortLateral.new( position => $pos-A );
+is $plm.light-defn, 'Q(6)+L Fl.15s',                                        'light-defn';
+is $plm.light-svg.pattern;
 
 done-testing;
 
