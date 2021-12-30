@@ -83,7 +83,7 @@ is $course.speed-over-ground.in('knots'), '6.2knot',                        'spe
 $IALA = A;
 my $plm = PortLateral.new( position => $pos-A );
 is $plm.light-defn, 'Fl.R5s',                                               'light-defn';
-ok $plm.light-svg.pattern eq <#fff #000 #fff #000 #fff #000 #fff #000 #fff #000>, 'light-svg';
+ok $plm.light-svg.pattern eq <#f00 #000 #000 #000 #000 #000>,               'light-svg';
 
 done-testing;
 
