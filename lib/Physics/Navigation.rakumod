@@ -647,6 +647,10 @@ class SVG-animation is export {
             @pattern.push: $off;
         }
     }
+
+    method Str {
+        say "duration is $.duration. pattern is @.pattern";
+    }
 }
 
 class LightCodeSVG-actions {
