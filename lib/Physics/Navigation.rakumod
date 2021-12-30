@@ -628,13 +628,13 @@ class LightCode-actions {
 
 #| desired output is SVG-animation object
 class SVG-animation is export {
-    has $.base-rate = 1;
-    has $.continuous is rw;
-    has $.duration is rw = 5;           #total duration/period (s) of flash sequence
-    has $.fl-times is rw = 1;           #number of times to flash
-    has $.on       is rw = '#fff';
-    has $.off      is rw = '#000';
-	has $.extra    is rw = False;
+    has $.base-rate  = 1;
+    has $.continuous is rw = False;
+    has $.duration   is rw = 5;           #total duration/period (s) of flash sequence
+    has $.fl-times   is rw = 1;           #number of times to flash
+    has $.on         is rw = '#fff';
+    has $.off        is rw = '#000';
+	has $.extra      is rw = False;
 
     #   @.pattern  = <#800 #f00 #800 #800>;
     #                 ^^^^ - colour codes (#RGB)
@@ -684,8 +684,7 @@ class SVG-animation is export {
 class LightCodeSVG-actions {
 
     method TOP($/)  {
-#        dd $<kind>;
-#        dd $<period>;
+		#dd $<kind>;
 
         my $anime = $<kind>.made;
 
@@ -700,17 +699,17 @@ class LightCodeSVG-actions {
     }
     method kind($/) {
         # Flashes = 1s, Quick = 1/2s, V. Quick = 1/4s
-        my ( $base-rate, $continuous );
+        my ( $base-rate, $continuous, $special );
 
 		given $/ {
             when 'VQ'  { $base-rate = <1/4>; $continuous = True  }
             when  'Q'  { $base-rate = <1/2>; $continuous = True  }
             when 'Fl'  { $base-rate =  1   ; $continuous = False }
-#            when 'F'   { $/.make: 'Fixed' }
-#            when 'Oc'  { $/.make: 'Occulting' }
-#            when 'Iso' { $/.make: 'Isophase' }
+            when 'F'   { $special   =  'Fixed'     }
+            when 'Oc'  { $special   =  'Occulting' }
+            when 'Iso' { $special   =  'Isophase'  }
         }
-        $/.make: SVG-animation.new( :$base-rate, :$continuous );
+        $/.make: SVG-animation.new( :$base-rate, :$continuous; :$special );
     }
     method group($/) {
         $/.make: ~$/<digits>.Int
