@@ -624,21 +624,29 @@ class LightCode-actions {
 # long = 3s
 # occult = invert this
 
-#constant \on  = '#fff';
-#constant \off = '#000';
 
 #| desired output is SVG-animation object
 class SVG-animation is export {
     has $.base-rate = 1;
-
-
     has $.duration is rw = 5;         #total duration/period (s) of flash sequence
-    has @.pattern;
 
-    # has @.pattern  = <#800 #f00 #800 #800>;
-    #                   ^^^^ - colour codes (#RGB)
-    #                        - need to alternate on/off
-    #                        - count determines flash base interval (=dur/count)
+    #   @.pattern  = <#800 #f00 #800 #800>;
+    #                 ^^^^ - colour codes (#RGB)
+    #                      - alternate on/off
+    #                      - .elems determined by (=duration/base-rate)
+
+    method pattern {
+        my $count = $!duration / $!base-rate;
+
+        my $on = '#fff';
+        my $off = '#000';
+
+        my @pattern;
+        for $count {
+            @pattern.push: $on;
+            @pattern.push: $off;
+        }
+    }
 }
 
 class LightCodeSVG-actions {
@@ -655,7 +663,7 @@ class LightCodeSVG-actions {
         #put "in TOP..."; dd $/.made;
     }
     method kind($/) {
-        # interpretation Flashes = 1s, FQ = 0.5s,
+        # interpretation Flashes = 1s, Quick = 1/2s, V. Quick = 1/4s
         my $base-rate;
 
         given $/ {
@@ -731,7 +739,6 @@ role Light is export {
 	}
 
     method light-svg {
-        say 'yo';
         LightCode.parse($.light-defn, actions => LightCodeSVG-actions.new).made
     }
 }
