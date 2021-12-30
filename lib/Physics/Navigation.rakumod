@@ -628,8 +628,9 @@ class LightCode-actions {
 #| desired output is SVG-animation object
 class SVG-animation is export {
     has $.base-rate = 1;
-    has $.duration is rw = 5;         #total duration/period (s) of flash sequence
-    has $.fl-times is rw = 1;         #number of times to flash
+    has $.continuous;
+    has $.duration is rw = 5;           #total duration/period (s) of flash sequence
+    has $.fl-times is rw = 1;           #number of times to flash
     has $.on       is rw = '#fff';
     has $.off      is rw = '#000';
 
@@ -644,7 +645,8 @@ class SVG-animation is export {
         my @pattern;
         for ^$beats {
             @pattern.push: $!fl-times >= 1 ?? $!on !! $!off;
-            $!fl-times -= 1;        # -- does not work on attributes
+            $!fl-times -= 1;            # -- does not work on attributes
+
             @pattern.push: $!off;
         }
         @pattern
@@ -673,17 +675,17 @@ class LightCodeSVG-actions {
     }
     method kind($/) {
         # Flashes = 1s, Quick = 1/2s, V. Quick = 1/4s
-        my $base-rate;
+        my ( $base-rate, $continuous ;
 
         given $/ {
-            when 'VQ'  { $base-rate = <1/4> }
-            when  'Q'  { $base-rate = <1/2> }
-            when 'Fl'  { $base-rate =  1    }
+            when 'VQ'  { $base-rate = <1/4>; $continuous = True  }
+            when  'Q'  { $base-rate = <1/2>; $continuous = True  }
+            when 'Fl'  { $base-rate =  1   ; $continuous = False }
 #            when 'F'   { $/.make: 'Fixed' }
 #            when 'Oc'  { $/.make: 'Occulting' }
 #            when 'Iso' { $/.make: 'Isophase' }
         }
-        $/.make: SVG-animation.new( :$base-rate );;
+        $/.make: SVG-animation.new( :$base-rate, :$continuous );
     }
     method group($/) {
         $/.make: ~$/<digits>.Int;
