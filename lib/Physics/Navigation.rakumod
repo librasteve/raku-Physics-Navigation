@@ -661,7 +661,7 @@ class SVG-animation is export {
     }
 
     method Str {
-        "duration is {$.duration}; pattern is <{$.pattern}>;";
+        "duration is {$.duration};\n pattern is <{$.pattern}>;\n\n";
     }
 }
 
@@ -674,7 +674,7 @@ class LightCodeSVG-actions {
         my $anime = $<kind>.made;
 
         with $<period>.made {$anime.duration = $_};
-        with $<group>.made  {$anime.fl-times = $_};
+        with $<group>.made  {$anime.fl-times = $_; $anime.continuous = False };
         with $<colour>.made {$anime.on       = $_};
 
         $/.make: $anime;
