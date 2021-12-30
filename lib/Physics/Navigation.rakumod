@@ -630,6 +630,8 @@ class SVG-animation is export {
     has $.base-rate = 1;
     has $.duration is rw = 5;         #total duration/period (s) of flash sequence
     has $.fl-times is rw = 1;         #number of times to flash
+    has $.on       is rw = '#fff';
+    has $.off      is rw = '#000';
 
     #   @.pattern  = <#800 #f00 #800 #800>;
     #                 ^^^^ - colour codes (#RGB)
@@ -639,16 +641,12 @@ class SVG-animation is export {
     method pattern {
         my $beats = $!duration / $!base-rate;
 
-        my $on  = '#fff';
-        my $off = '#000';
-
         my @pattern;
         for ^$beats {
-            @pattern.push: $!fl-times >= 1 ?? $on !! $off;
-            $!fl-times -= 1;
-            @pattern.push: $off;
+            @pattern.push: $!fl-times >= 1 ?? $!on !! $!off;
+            $!fl-times -= 1;        # -- does not work on attributes
+            @pattern.push: $!off;
         }
-
         @pattern
     }
 
@@ -667,13 +665,14 @@ class LightCodeSVG-actions {
 
         with $<period>.made {$anime.duration = $_};
         with $<group>.made  {$anime.fl-times = $_};
+        with $<colour>.made {$anime.on       = $_};
 
         $/.make: $anime;
 
         #put "in TOP..."; dd $/.made;
     }
     method kind($/) {
-        # interpretation Flashes = 1s, Quick = 1/2s, V. Quick = 1/4s
+        # Flashes = 1s, Quick = 1/2s, V. Quick = 1/4s
         my $base-rate;
 
         given $/ {
@@ -689,10 +688,10 @@ class LightCodeSVG-actions {
     method group($/) {
         $/.make: ~$/<digits>.Int;
     }
-#    method colour($/) {
-#        my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
-#        $/.make: %palette{~$/}
-#    }
+    method colour($/) {
+        my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
+        $/.make: %palette{~$/}
+    }
 #    method extra($/) {
 #        $/.make: 'plus one long'
 #    }
