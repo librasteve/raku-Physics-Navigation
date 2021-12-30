@@ -629,7 +629,7 @@ class LightCode-actions {
 class SVG-animation is export {
     has $.base-rate = 1;
     has $.duration is rw = 5;         #total duration/period (s) of flash sequence
-    has $.fl-times = 1;               #number of times to flash
+    has $.fl-times is rw = 1;         #number of times to flash
 
     #   @.pattern  = <#800 #f00 #800 #800>;
     #                 ^^^^ - colour codes (#RGB)
