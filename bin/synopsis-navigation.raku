@@ -86,4 +86,4 @@ $IALA = A;
 my $plm = PortLateral.new( position => $pos-B );
 say $plm.light-defn;
 say ~$plm;
-say "SVG-animation, duration is {$plm.light-svg.duration}, pattern is: {$plm.light-svg.pattern};";
+say "SVG-animation: duration is {$plm.light-svg.duration}s, pattern is: [{$plm.light-svg.pattern}];";
