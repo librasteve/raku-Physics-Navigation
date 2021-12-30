@@ -644,6 +644,13 @@ class SVG-animation is export {
 class LightCodeSVG-actions {
 
     method TOP($/)  {
+
+        dd $<kind>;
+
+        $<kind>.made.duration = $<period>;
+
+        die;
+
         my @p;
         @p.push: $/<kind>.made;
 #        @p.push: $/<group>.made;
@@ -678,7 +685,7 @@ class LightCodeSVG-actions {
 #        $/.make: 'plus one long'
 #    }
     method period($/) {
-        $<kind>.made.duration = $/<digits>;
+        $/.make: $/<digits>;
     }
 }
 
