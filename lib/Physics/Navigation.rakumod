@@ -649,9 +649,10 @@ class LightCodeSVG-actions {
 
         my $anime = $<kind>.made;
         with $<period>.made {$anime.duration = $_};
+
         $/.make: $anime;
-        #$/.make: $<kind>.made.duration = $<period>.made;
-        put "in TOP...", dd $/.made;
+
+        #put "in TOP..."; dd $/.made;
     }
     method kind($/) {
         # interpretation Flashes = 1s, FQ = 0.5s,
