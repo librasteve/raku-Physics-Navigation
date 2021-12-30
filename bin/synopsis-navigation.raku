@@ -87,7 +87,6 @@ my $plm = PortLateral.new( position => $pos-B );
 say $plm.light-defn;
 say ~$plm;
 
-
-say $scm.light-svg;
-say $ncm.light-svg;
-say $plm.light-svg;
+dd $scm.light-svg;
+dd $ncm.light-svg;
+dd $plm.light-svg;
