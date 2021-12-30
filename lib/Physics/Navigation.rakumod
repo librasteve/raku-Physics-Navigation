@@ -648,7 +648,7 @@ class LightCodeSVG-actions {
 #        dd $<period>;
 
         my $anime = $<kind>.made;
-        $anime.duration //= $<period>.made;
+        with $<period>.made {$anime.duration = $_};
         $/.make: $anime;
         #$/.make: $<kind>.made.duration = $<period>.made;
         put "in TOP...", dd $/.made;
