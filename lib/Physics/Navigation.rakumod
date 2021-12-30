@@ -661,7 +661,7 @@ class SVG-animation is export {
     }
 
     method Str {
-        say "duration is {$.duration}; pattern is <{$.pattern}>;";
+        "duration is {$.duration}; pattern is <{$.pattern}>;";
     }
 }
 
