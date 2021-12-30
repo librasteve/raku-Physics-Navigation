@@ -647,7 +647,7 @@ class LightCodeSVG-actions {
 #        dd $<kind>;
 #        dd $<period>;
 
-        $/.make: $<kind>.made.duration = $<period>;
+        $/.make: $<kind>.made.duration = $<period>.made;
         say "in TOP..."; dd $/.made;
     }
     method kind($/) {
