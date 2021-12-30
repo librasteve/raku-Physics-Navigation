@@ -646,13 +646,13 @@ class SVG-animation is export {
         my $beats = $!duration / ( $!base-rate * 2 ); #issue 2 phases per beat
 
 		my @p;
-		if $!continuous {
+#		if $!continuous {
+#			for ^$beats {
+#				@p.push: $!on, $!off;
+#			}
+#		} else {
 			for ^$beats {
-				@p.push: $!on, $!off;
-			}
-		} else {
-			for ^$beats {
-				if $!fl-times >= 1 {
+				if $!continuous || $!fl-times >= 1 {
 					@p.push: $!on, $!off;
 				} else {
 					@p.push: $!off, $!off;
@@ -660,7 +660,7 @@ class SVG-animation is export {
 				$!fl-times -= 1;
 				# -- does not work on attributes
 			}
-		}
+#		}
 
 		if $!extra {
 			my $ex-start = @p.elems / 2;   		# extra = half and half
