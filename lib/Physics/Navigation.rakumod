@@ -675,9 +675,9 @@ class LightCodeSVG-actions {
     }
     method kind($/) {
         # Flashes = 1s, Quick = 1/2s, V. Quick = 1/4s
-        my ( $base-rate, $continuous ;
+        my ( $base-rate, $continuous );
 
-        given $/ {
+		given $/ {
             when 'VQ'  { $base-rate = <1/4>; $continuous = True  }
             when  'Q'  { $base-rate = <1/2>; $continuous = True  }
             when 'Fl'  { $base-rate =  1   ; $continuous = False }
