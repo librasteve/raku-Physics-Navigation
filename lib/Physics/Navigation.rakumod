@@ -642,7 +642,7 @@ class SVG-animation is export {
     #                      - .elems determined by (=duration/base-rate)
 
     method pattern {
-        my $beats = $!duration / $!base-rate;
+        my $beats = $!duration / ( $!base-rate * 2 ); #issue 2 phases per beat
 
         my @pattern;
 
