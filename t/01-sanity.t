@@ -3,7 +3,7 @@
 #TESTALL$ prove6 ./t      [from root]
 use lib '../lib';
 use Test;
-#plan 21;
+plan 22;
 
 use Physics::Navigation;
 use Physics::Measure;
@@ -85,5 +85,5 @@ my $plm = PortLateral.new( position => $pos-A );
 is $plm.light-defn, 'Fl.R5s',                                               'light-defn';
 ok $plm.light-svg.pattern eq <#f00 #000 #000 #000 #000 #000>,               'light-svg';
 
-done-testing;
+#done-testing;
 
