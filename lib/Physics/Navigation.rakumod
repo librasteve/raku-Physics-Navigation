@@ -646,6 +646,8 @@ class SVG-animation is export {
             @pattern.push: $on;
             @pattern.push: $off;
         }
+
+        @pattern
     }
 
     method Str {
