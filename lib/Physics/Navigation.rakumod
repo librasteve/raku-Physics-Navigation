@@ -610,9 +610,27 @@ class LightCode-actions {
 	}
 }
 
-# pull in svg example, then do it!
+# Flashes quickly 6 times plus one long every 15 seconds
+# Flashes red every 5 seconds
+#
+# interpret Flashes = 1s, FQ = 0.5s, long = 3s
+# plus == half and half
+#
+# colour = on & off (black)
+# occult = invert this
+
+#desired output for Animate object
+#
+# has @.pattern  = <#800 #f00 #800 #800>;
+#                   ^^^^ - colour codes (#RGB)
+#                        - need to alternate on/off
+#                        - count determines flash base period (=dur/count)
+#
+# has $.duration = 2;
+#                  ^ total duration (s)
 
 class LightCodeSVG-actions {
+
     method TOP($/)  {
         my @p;
         @p.push: $/<kind>.made;
@@ -648,12 +666,6 @@ class LightCodeSVG-actions {
     }
     method period($/) {
         $/.make: 'every ' ~ ~$/<digits> ~ ' seconds'
-    }
-    method height($/) {
-        $/.make: 'at height of ' ~ ~$/<digits> ~ 'm above MHWS'
-    }
-    method visibility($/) {
-        $/.make: 'range ' ~ ~$/<digits> ~ 'nmiles in clear visibility'
     }
 }
 
