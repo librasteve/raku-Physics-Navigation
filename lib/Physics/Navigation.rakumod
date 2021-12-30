@@ -665,13 +665,13 @@ class SVG-animation is export {
 		}
 
 		if $!extra {
-			my $ex-start = @p.elems/2;   		# extra = half and half
+			my $ex-start = @p.elems / 2;   		# extra = half and half
 			my $ex-beats = 3 / $!base-rate;   	# long  = 3s
 			my @e;
 			for ^$ex-beats {
 				@e.push: $!on;
 			}
-			@p.splice( $ex-start, $ex-beats, @e );
+			@p.splice( $ex-start.Int, $ex-beats.Int, @e );
 		}
         @p
     }
