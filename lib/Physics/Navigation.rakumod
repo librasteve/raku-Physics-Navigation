@@ -646,23 +646,24 @@ class SVG-animation is export {
 
 
 		my @pattern;
-		given @pattern;
-
-		if $!continuous {
-			for ^$beats {
-				.push: $!on;
-				.push: $!off;
-			}
-		} else {
-			for ^$beats {
-				if $!fl-times >= 1 {
+		given @pattern {
+			if $!continuous {
+				for ^$beats {
 					.push: $!on;
 					.push: $!off;
-				} else {
-					.push: $!off;
-					.push: $!off;
 				}
-				$!fl-times -= 1;            # -- does not work on attributes
+			} else {
+				for ^$beats {
+					if $!fl-times >= 1 {
+						.push: $!on;
+						.push: $!off;
+					} else {
+						.push: $!off;
+						.push: $!off;
+					}
+					$!fl-times -= 1;
+					# -- does not work on attributes
+				}
 			}
 		}
         @pattern
