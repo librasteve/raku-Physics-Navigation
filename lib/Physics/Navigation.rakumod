@@ -635,6 +635,7 @@ class SVG-animation is export {
     has $.on         is rw = '#fff';
     has $.off        is rw = '#000';
 	has $.extra      is rw = False;
+	has $.special 	 = False;
 
     #   @.pattern  = <#800 #f00 #800 #800>;
     #                 ^^^^ - colour codes (#RGB)
@@ -709,7 +710,7 @@ class LightCodeSVG-actions {
             when 'Oc'  { $special =  'Occulting' }
             when 'Iso' { $special =  'Isophase' }
         }
-        $/.make: SVG-animation.new( :$base-rate, :$continuous );
+        $/.make: SVG-animation.new( :$base-rate, :$continuous, :$special );
     }
     method group($/) {
         $/.make: ~$/<digits>.Int
