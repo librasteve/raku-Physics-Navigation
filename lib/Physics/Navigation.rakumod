@@ -644,7 +644,7 @@ class SVG-animation is export {
         my $off = '#000';
 
         my @pattern;
-        for $count {
+        for ^$count {
             @pattern.push: $on;
             @pattern.push: $off;
         }
