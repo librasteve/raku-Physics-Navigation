@@ -644,7 +644,9 @@ class SVG-animation is export {
     method pattern {
         my $beats = $!duration / ( $!base-rate * 2 ); #issue 2 phases per beat
 
-        given my @pattern;
+
+		my @pattern;
+		given @pattern;
 
 		if $!continuous {
 			for ^$beats {
