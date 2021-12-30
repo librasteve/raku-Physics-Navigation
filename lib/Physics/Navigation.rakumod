@@ -619,27 +619,26 @@ class LightCode-actions {
 # Fl.R5s
 # Flashes red every 5 seconds
 #
-# interpret Flashes = 1s, FQ = 0.5s, long = 3s
-# plus == half and half
-#
-# colour = on & off (black)
+
+# extra == half and half
+# long = 3s
 # occult = invert this
 
-#desired output for Animate object
-#
-# has @.pattern  = <#800 #f00 #800 #800>;
-#                   ^^^^ - colour codes (#RGB)
-#                        - need to alternate on/off
-#                        - count determines flash base interval (=dur/count)
-#
-# has $.duration = 2;
-#                  ^ total duration (s)
+#constant \on  = '#fff';
+#constant \off = '#000';
+
+#| desired output is SVG-animation object
+class SVG-animation is export {
+    has $.base-rate = 1;
 
 
-class SVG-animation {
+    has $.duration = 5;         #total duration/period (s) of flash sequence
     has @.pattern;
-    has $.duration = 5;
 
+    # has @.pattern  = <#800 #f00 #800 #800>;
+    #                   ^^^^ - colour codes (#RGB)
+    #                        - need to alternate on/off
+    #                        - count determines flash base interval (=dur/count)
 }
 
 class LightCodeSVG-actions {
@@ -647,39 +646,39 @@ class LightCodeSVG-actions {
     method TOP($/)  {
         my @p;
         @p.push: $/<kind>.made;
-        @p.push: $/<group>.made;
-        @p.push: $/<colour>.made;
-        @p.push: $/<extra>.made;
+#        @p.push: $/<group>.made;
+#        @p.push: $/<colour>.made;
+#        @p.push: $/<extra>.made;
         @p.push: $/<period>.made;
-        @p.push: $/<height>.made;
-        @p.push: $/<visibility>.made;
 
         $/.make: @p.grep({.so}).join(' ')
     }
     method kind($/) {
-        my $anime = SVG-animation.new;
+        # interpretation Flashes = 1s, FQ = 0.5s,
+        my $base-rate;
+
         given $/ {
-            when 'VQ'  { $/.make: 'Flashes very quickly' }
-            when  'Q'  { $/.make: 'Flashes quickly' }
-            when 'Fl'  { $/.make: 'Flashes' }
-            when 'F'   { $/.make: 'Fixed' }
-            when 'Oc'  { $/.make: 'Occulting' }
-            when 'Iso' { $/.make: 'Isophase' }
+            when 'VQ'  { $base-rate = <1/4> }
+            when  'Q'  { $base-rate = <1/2> }
+            when 'Fl'  { $base-rate =  1    }
+#            when 'F'   { $/.make: 'Fixed' }
+#            when 'Oc'  { $/.make: 'Occulting' }
+#            when 'Iso' { $/.make: 'Isophase' }
         }
+        $/.make: SVG-animation.new( :$base-rate );;
     }
-    method group($/) {
-        $/.make: ~$/<digits> ~ ' times'
-    }
-    #eg. iamerejh
-    method colour($/) {
-        my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
-        $/.make: %palette{~$/}
-    }
-    method extra($/) {
-        $/.make: 'plus one long'
-    }
+#    method group($/) {
+#        $/.make: ~$/<digits> ~ ' times'
+#    }
+#    method colour($/) {
+#        my %palette = %( G => '#0f0', R => '#f00', W => '#fff' );
+#        $/.make: %palette{~$/}
+#    }
+#    method extra($/) {
+#        $/.make: 'plus one long'
+#    }
     method period($/) {
-        $/.make: 'every ' ~ ~$/<digits> ~ ' seconds'
+        $<kind>.made.duration = $/<digits>;
     }
 }
 
