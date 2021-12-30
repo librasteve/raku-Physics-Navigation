@@ -653,8 +653,6 @@ class SVG-animation is export {
 			for ^$beats {
 				@pattern.push: $!fl-times >= 1 ?? $!on !! $!off;
 				$!fl-times -= 1;            # -- does not work on attributes
-
-				@pattern.push: $!off;
 			}
 		}
         @pattern
