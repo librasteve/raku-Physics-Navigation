@@ -649,16 +649,13 @@ class SVG-animation is export {
 		if $!continuous {
 			for ^$beats {
 				@p.push: $!on, $!off;
-#				@p.push: $!off;
 			}
 		} else {
 			for ^$beats {
 				if $!fl-times >= 1 {
-					@p.push: $!on;
-					@p.push: $!off;
+					@p.push: $!on, $!off;
 				} else {
-					@p.push: $!off;
-					@p.push: $!off;
+					@p.push: $!off, $!off;
 				}
 				$!fl-times -= 1;
 				# -- does not work on attributes
