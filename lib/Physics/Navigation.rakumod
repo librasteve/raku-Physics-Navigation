@@ -628,7 +628,7 @@ class LightCode-actions {
 #| desired output is SVG-animation object
 class SVG-animation is export {
     has $.base-rate = 1;
-    has $.continuous;
+    has $.continuous is rw;
     has $.duration is rw = 5;           #total duration/period (s) of flash sequence
     has $.fl-times is rw = 1;           #number of times to flash
     has $.on       is rw = '#fff';
