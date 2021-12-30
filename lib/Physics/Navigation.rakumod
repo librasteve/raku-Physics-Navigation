@@ -671,7 +671,7 @@ class SVG-animation is export {
 			for ^$ex-beats {
 				@e.push: $!on;
 			}
-			@p.splice: $ex-start, $ex-beats, @e;
+			@p.splice( $ex-start, $ex-beats, @e );
 		}
         @p
     }
