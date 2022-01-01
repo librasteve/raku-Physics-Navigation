@@ -9,7 +9,7 @@ Provides Measure objects that have value, units and error and can be used in man
 
 and, conversely, ```zef uninstall Physics::Navigation```
 
-**For a more structured introduction to these concepts, please refer to [raku Yacht Navigation](https://github.com/p6steve/raku-Yacht-Navigation) for an descriptive Jupyter notebook**
+**For a gentler introduction to and explanation of these features, please refer to [raku Yacht Navigation](https://github.com/p6steve/raku-Yacht-Navigation) for a descriptive Jupyter notebook**
 
 # Synopsis
 
