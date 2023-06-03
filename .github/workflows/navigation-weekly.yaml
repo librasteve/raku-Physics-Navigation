@@ -6,7 +6,7 @@ on:
       - Dockerfile
       - .github/workflows/navigation-weekly.yaml
   schedule:
-      - cron: "51 3 * * 5"
+      - cron: "51 4 * * 5"
 
 jobs:
   build-unit:
