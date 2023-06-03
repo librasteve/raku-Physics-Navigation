@@ -1,3 +1,6 @@
+[![License: Artistic-2.0](https://img.shields.io/badge/License-Artistic%202.0-0298c3.svg)](https://opensource.org/licenses/Artistic-2.0)
+[![raku-physics-navigation -> DH](https://github.com/librasteve/raku-Physics-Navigation/actions/workflows/navigation-weekly.yaml/badge.svg)](https://github.com/librasteve/raku-Physics-Navigation/actions/workflows/navigation-weekly.yaml)
+
 # raku Physics::Navigation
 
 This module is an abstraction on [Physics::Measure](https://github.com/librasteve/raku-Physics-Measure) that provides Latitude, Longitude, Bearing, Position, Course and Buoy classes.
@@ -118,3 +121,5 @@ The family of Physics::Navigation, Physics::Measure, Physics::Unit, Physics::Err
 You are welcome to contribute in any way - please open a pull request.
 
 Any feedback is welcome to librasteve / via the github Issues above.
+
+Copyright (c) Henley Cloud Consulting Ltd. 2021-2023
