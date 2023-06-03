@@ -1,15 +1,15 @@
 # raku Physics::Navigation
 
-This module is an abstraction on [Physics::Measure](https://github.com/p6steve/raku-Physics-Measure) that provides Latitude, Longitude, Bearing, Position, Course and Buoy classes.
+This module is an abstraction on [Physics::Measure](https://github.com/librasteve/raku-Physics-Measure) that provides Latitude, Longitude, Bearing, Position, Course and Buoy classes.
 
-Provides Measure objects that have value, units and error and can be used in many common physics calculations. Uses [Physics::Unit](https://github.com/p6steve/raku-Physics-Unit) and [Physics::Error](https://github.com/p6steve/raku-Physics-Error).
+Provides Measure objects that have value, units and error and can be used in many common physics calculations. Uses [Physics::Unit](https://github.com/librasteve/raku-Physics-Unit) and [Physics::Error](https://github.com/librasteve/raku-Physics-Error).
 
 # Instructions
 ```zef --verbose install Physics::Navigation```
 
 and, conversely, ```zef uninstall Physics::Navigation```
 
-**For a gentler introduction to and explanation of these features, please refer to [raku Yacht Navigation](https://github.com/p6steve/raku-Yacht-Navigation) for a descriptive Jupyter notebook**
+**For a gentler introduction to and explanation of these features, please refer to [raku Yacht Navigation](https://github.com/librasteve/raku-Yacht-Navigation) for a descriptive Jupyter notebook**
 
 # Synopsis
 
@@ -117,4 +117,4 @@ The family of Physics::Navigation, Physics::Measure, Physics::Unit, Physics::Err
 
 You are welcome to contribute in any way - please open a pull request.
 
-Any feedback is welcome to p6steve / via the github Issues above.
+Any feedback is welcome to librasteve / via the github Issues above.

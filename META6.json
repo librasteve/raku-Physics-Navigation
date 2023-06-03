@@ -4,9 +4,9 @@
   "version": "0.0.2",
   "perl": "6.d",
   "authors": [
-    "p6steve"
+    "librasteve"
   ],
-  "auth": "zef:p6steve",
+  "auth": "zef:librasteve",
   "depends": [
     "Physics::Measure",
     "Physics::Unit"
@@ -23,5 +23,5 @@
     "Navigation"
   ],
   "api": "1",
-  "source-url": "git://github.com/p6steve/raku-Physics-Navigation.git"
+  "source-url": "git://github.com/librasteve/raku-Physics-Navigation.git"
 }
