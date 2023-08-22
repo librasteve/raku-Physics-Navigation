@@ -54,7 +54,7 @@ my $bear2 = ♓️<43°30′30″M>;                                       say ~
 my $bear3 = $bear2 + $bear1.M;                                    say ~$bear3;
 
 # here's how to steer your boat to Port (Pt) or Starboard (Sb)
-my $steer = ♓️<50Pt°>;                                            say ~$steer;
+my $steer = ♓️<50°Pt>;                                            say ~$steer;
 my $bear4 = $bear2 + $steer;                                      say ~$bear4;
 my $bear5 = $bear4.back;                                          say ~$bear5; #and take a back bearing
 
