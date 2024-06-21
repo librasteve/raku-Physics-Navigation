@@ -58,7 +58,7 @@ class NavAngle is Angle {
     multi method new( :$value!, :$units, :$compass ) {	say "NA new from attrs" if $db; 
 		warn "NavAngles always use degrees!" if $units.defined && ~$units ne '°'; 
 
-		my $nao = self.bless( :$value, units => GetMeaUnit('°') );
+		my $nao = self.bless( :$value, units => Measure.unit-find('°') );
 		$nao.compass( $compass ) if $compass;
 		return $nao
     }
