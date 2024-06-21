@@ -1,7 +1,7 @@
 {
   "name": "Physics::Navigation",
   "description": "Some units for navigation.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "perl": "6.d",
   "authors": [
     "librasteve"
