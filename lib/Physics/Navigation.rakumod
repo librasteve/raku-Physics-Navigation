@@ -1,4 +1,4 @@
-unit module Physics::Navigation:ver<0.0.3>:auth<Steve Roe (librasteve@furnival.net)>;
+unit module Physics::Navigation:ver<0.0.4>:auth<Steve Roe (librasteve@furnival.net)>;
 use Physics::Measure;
 
 ## Provides extensions to Physics::Measure and Physics::Unit for nautical navigation...
