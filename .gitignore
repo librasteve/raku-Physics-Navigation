@@ -10,3 +10,5 @@
 .rakumod.swp
 .Dockerfile.swp
 .json.swp
+/.idea/comma.xml
+/.idea/workspace.xml
